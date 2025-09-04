@@ -27,12 +27,13 @@ import { createAuthMiddleware, oAuthProxy } from "better-auth/plugins";
 export const auth = betterAuth({
   baseURL: env.BETTER_AUTH_URL,
   secret: env.BETTER_AUTH_SECRET!,
-  trustedOrigins: [env.VERCEL_URL!, "http://localhost:3000"],
+  trustedOrigins: ["https://acceltop-lms.vercel.app", "http://localhost:3000"],
   plugins:
     env.NODE_ENV === "production"
       ? [
           oAuthProxy({
-            productionURL: env.BETTER_AUTH_URL, // Replace with your domain
+            productionURL:
+              "https://acceltop-lms.vercel.app/api/auth/callback/google", // Replace with your domain
             currentURL: env.BETTER_AUTH_URL,
           }),
         ]
@@ -44,7 +45,7 @@ export const auth = betterAuth({
       clientSecret: env.GOOGLE_CLIENT_SECRET as string,
       redirectURI:
         env.NODE_ENV === "production"
-          ? `${env.BETTER_AUTH_URL}/api/auth/callback/google`
+          ? `https://acceltop-lms.vercel.app/api/auth/callback/google`
           : "http://localhost:3000/api/auth/callback/google",
     },
   },
