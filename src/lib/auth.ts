@@ -4,30 +4,30 @@ import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { createAuthMiddleware, oAuthProxy } from "better-auth/plugins";
 
-// const getTrustedOrigins = () => {
-//   const origins = new Set<string>();
-//   const add = (v?: string) => v && origins.add(v);
+const getTrustedOrigins = () => {
+  const origins = new Set<string>();
+  const add = (v?: string) => v && origins.add(v);
 
-//   const toOrigin = (host?: string) =>
-//     host?.startsWith("http") ? host : host ? `https://${host}` : undefined;
-//   const toWWWOrigin = (host?: string) =>
-//     host?.startsWith("http") ? host : host ? `https://www.${host}` : undefined;
+  const toOrigin = (host?: string) =>
+    host?.startsWith("http") ? host : host ? `https://${host}` : undefined;
+  const toWWWOrigin = (host?: string) =>
+    host?.startsWith("http") ? host : host ? `https://www.${host}` : undefined;
 
-//   add(env.BETTER_AUTH_URL);
+  add(env.BETTER_AUTH_URL);
 
-//   add(toOrigin(env.VERCEL_URL));
-//   add(toWWWOrigin(env.VERCEL_URL));
+  add(toOrigin(env.VERCEL_URL));
+  add(toWWWOrigin(env.VERCEL_URL));
 
-//   add("http://localhost:3000"); // local dev
-//   add("http://localhost:3001"); // local dev
-//   console.log(origins);
-//   return Array.from(origins);
-// };
+  add("http://localhost:3000"); // local dev
+  add("http://localhost:3001"); // local dev
+
+  return Array.from(origins);
+};
 
 export const auth = betterAuth({
   baseURL: env.BETTER_AUTH_URL,
   secret: env.BETTER_AUTH_SECRET!,
-  trustedOrigins: ["https://acceltop-lms.vercel.app", "http://localhost:3000"],
+  trustedOrigins: getTrustedOrigins(),
   plugins:
     env.NODE_ENV === "production"
       ? [
@@ -45,7 +45,7 @@ export const auth = betterAuth({
       clientSecret: env.GOOGLE_CLIENT_SECRET as string,
       redirectURI:
         env.NODE_ENV === "production"
-          ? `https://acceltop-lms.vercel.app/api/auth/callback/google`
+          ? `${env.BETTER_AUTH_URL}/api/auth/callback/google`
           : "http://localhost:3000/api/auth/callback/google",
     },
   },
