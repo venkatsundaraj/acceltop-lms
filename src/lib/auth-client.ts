@@ -1,7 +1,8 @@
+import { env } from "@/env";
 import { createAuthClient } from "better-auth/react";
 
 export const authClient = createAuthClient({
-  baseURL: "http://localhost:3000",
+  baseURL: env.NEXT_PUBLIC_BETTER_AUTH_URL,
   fetchOptions: {
     onError: (e) => {
       console.log("Auth client error:", e.response, e.request);

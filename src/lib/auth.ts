@@ -32,7 +32,7 @@ export const auth = betterAuth({
     env.NODE_ENV === "production"
       ? [
           oAuthProxy({
-            productionURL: "http://localhost:3000", // Replace with your domain
+            productionURL: env.VERCEL_URL, // Replace with your domain
             currentURL: env.BETTER_AUTH_URL,
           }),
         ]

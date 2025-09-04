@@ -21,7 +21,7 @@ const AuthForm: FC<AuthFormProps> = ({}) => {
       aria-label="Sign in with Google"
       onClick={loginHandler}
       className={cn(
-        buttonVariants({ variant: "default" }),
+        buttonVariants({ variant: "destructive" }),
         "w-full gap-3 cursor-pointer"
       )}
     >
