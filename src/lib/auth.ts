@@ -27,7 +27,7 @@ import { createAuthMiddleware, oAuthProxy } from "better-auth/plugins";
 export const auth = betterAuth({
   baseURL: env.BETTER_AUTH_URL,
   secret: env.BETTER_AUTH_SECRET!,
-  // trustedOrigins: getTrustedOrigins(),
+  trustedOrigins: [env.VERCEL_URL!, "http://localhost:3000"],
   plugins:
     env.NODE_ENV === "production"
       ? [

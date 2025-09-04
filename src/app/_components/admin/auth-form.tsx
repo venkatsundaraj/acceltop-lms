@@ -1,14 +1,29 @@
 "use client";
-import { FC } from "react";
+import { FC, useEffect } from "react";
 import { Button, buttonVariants } from "@/app/_components/ui/button";
 import { Icons } from "@/app/_components/miscellaneous/lucide-react";
 import { cn } from "@/lib/utils";
 import { auth } from "@/lib/auth";
 import { authClient, signIn, useSession } from "@/lib/auth-client";
+import { useRouter } from "next/navigation";
 
 interface AuthFormProps {}
 
 const AuthForm: FC<AuthFormProps> = ({}) => {
+  const router = useRouter();
+
+  const checkIfLoggedIn = async () => {
+    const { data } = await authClient.getSession();
+    return !!data?.session.id;
+  };
+
+  useEffect(() => {
+    checkIfLoggedIn().then((isLoggedIn) => {
+      if (isLoggedIn) {
+        router.push("/dashboard");
+      }
+    });
+  }, []);
   const loginHandler = async function () {
     const { data } = await signIn.social({
       provider: "google",
