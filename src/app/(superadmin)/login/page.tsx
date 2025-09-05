@@ -6,7 +6,12 @@ interface pageProps {}
 const page: FC<pageProps> = ({}) => {
   return (
     <section className="w-full bg-background h-screen max-h-screen grid grid-cols-1 md:grid-cols-2">
-      <div className="md:h-full shadow-md" />
+      <div className="md:h-full shadow-md flex items-center justify-center">
+        <img
+          src={"/marketing/acceltop-logo.webp"}
+          className="w-40 fill-foreground stroke-foreground"
+        />
+      </div>
 
       <div className="flex items-center justify-center h-full">
         <div className="flex flex-col items-center justify-center">

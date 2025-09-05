@@ -8,10 +8,10 @@
   --card-foreground: oklch(0.145 0 0);
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.514 0.1325 251.71);
-  --primary-foreground: oklch(1 0 0);
   --secondary: oklch(0.6318 0.0952 223.53);
-  --secondary-foreground: oklch(0.205 0 0);
+  --secondary-foreground: oklch(1 0 0);
+  --primary: oklch(0.6318 0.0952 223.53);
+  --primary-foreground: oklch(1 0 0);
   --muted: oklch(0.97 0 0);
   --muted-foreground: oklch(0.556 0 0);
   --accent: oklch(0.97 0 0);
@@ -48,7 +48,7 @@
   --paragraph-heading: clamp(20px, 1.5vw, 28px);
   --our_text-heading: clamp(28px, 2.4vw, 36px);
   --secondary-heading: clamp(28px, 2.4vw, 44px);
-  --primary-heading: clamp(36px, 7.2vw, 68px);
+  --primary-heading: clamp(36px, 4.2vw, 54px);
   --tertiary-heading: clamp(20px, 2vw, 28px);
   --subtitle-heading: clamp(16px, 1.2vw, 20px);
   --extra-subtitle-heading: clamp(15px, 1.5vw, 18px);
@@ -155,6 +155,26 @@
 
   --animate-in: animate-in 0.4s ease-out;
   --animate-out: animate-out 0.3s ease-in;
+
+  --animate-marquee: marquee var(--duration) infinite linear;
+  --animate-marquee-vertical: marquee-vertical var(--duration) linear infinite;
+
+  @keyframes marquee {
+    from {
+      transform: translateX(0);
+    }
+    to {
+      transform: translateX(calc(-100% - var(--gap)));
+    }
+  }
+  @keyframes marquee-vertical {
+    from {
+      transform: translateY(0);
+    }
+    to {
+      transform: translateY(calc(-100% - var(--gap)));
+    }
+  }
 }
 
 @utility container {
