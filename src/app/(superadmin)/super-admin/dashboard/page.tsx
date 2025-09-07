@@ -10,7 +10,7 @@ const page = async ({}) => {
   });
 
   if (!session) {
-    redirect("/login");
+    redirect("/super-admin/login");
   }
   return (
     <section className="w-full bg-background h-screen max-h-screen flex items-center justify-center">

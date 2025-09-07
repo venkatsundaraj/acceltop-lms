@@ -20,14 +20,14 @@ const AuthForm: FC<AuthFormProps> = ({}) => {
   useEffect(() => {
     checkIfLoggedIn().then((isLoggedIn) => {
       if (isLoggedIn) {
-        router.push("/dashboard");
+        router.push("/super-admin/dashboard");
       }
     });
   }, []);
   const loginHandler = async function () {
     const { data } = await signIn.social({
       provider: "google",
-      callbackURL: "/dashboard",
+      callbackURL: "/super-admin/dashboard",
     });
     console.log("clicked data", data);
   };

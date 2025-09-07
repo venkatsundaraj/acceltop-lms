@@ -61,15 +61,31 @@ export const auth = betterAuth({
       enabled: true,
     },
   },
+  // hooks: {
+  //   after: createAuthMiddleware(async (ctx) => {
+  //     const session = ctx.context.newSession;
+  //     console.log(session);
+  //     if (session) {
+  //       ctx.redirect("/dashboard");
+  //     } else {
+  //       ctx.redirect("/login");
+  //     }
+  //   }),
+  // },
+
   hooks: {
     after: createAuthMiddleware(async (ctx) => {
       const session = ctx.context.newSession;
-      console.log(session);
-      if (session) {
-        ctx.redirect("/dashboard");
-      } else {
-        ctx.redirect("/login");
-      }
+      console.log("path value", "headers", ctx.request?.headers.get("referer"));
+      const path = extractSignupSource(ctx.path);
+      ctx.json({
+        message: "Hello World",
+      });
     }),
   },
 });
+
+function extractSignupSource(path: string): string {
+  if (!path) "direct";
+  return "value";
+}
