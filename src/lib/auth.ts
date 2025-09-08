@@ -3,6 +3,11 @@ import { db } from "@/server/db";
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { createAuthMiddleware, oAuthProxy } from "better-auth/plugins";
+import { determineUserroleAndOrg, extractSignupSource } from "@/lib/auth-utils";
+import * as schema from "@/server/db/schema";
+import { eq } from "drizzle-orm";
+
+let signupContextValue: string = "";
 
 const getTrustedOrigins = () => {
   const origins = new Set<string>();
@@ -61,31 +66,37 @@ export const auth = betterAuth({
       enabled: true,
     },
   },
-  // hooks: {
-  //   after: createAuthMiddleware(async (ctx) => {
-  //     const session = ctx.context.newSession;
-  //     console.log(session);
-  //     if (session) {
-  //       ctx.redirect("/dashboard");
-  //     } else {
-  //       ctx.redirect("/login");
-  //     }
-  //   }),
-  // },
 
   hooks: {
     after: createAuthMiddleware(async (ctx) => {
       const session = ctx.context.newSession;
-      console.log("path value", "headers", ctx.request?.headers.get("referer"));
-      const path = extractSignupSource(ctx.path);
-      ctx.json({
-        message: "Hello World",
-      });
+
+      let signupContext = ctx.request?.headers.get("referer");
+
+      if (signupContext) {
+        signupContextValue = signupContext;
+      }
+
+      if (ctx.context.newSession && ctx.context.newSession?.user.email) {
+        const signupSource = extractSignupSource(signupContextValue);
+        const { role, organizationId } = await determineUserroleAndOrg(
+          ctx.context.newSession?.user.email,
+          signupSource
+        );
+
+        //updating the existing schema
+        const user = await db
+          .update(schema.user)
+          .set({
+            userRole: role,
+            organizationId: organizationId,
+            userStatus: role === "admin" ? "active" : "pending",
+            signupSource: signupSource,
+          })
+          .where(eq(schema.user.id, session?.user.id!))
+          .returning();
+        console.log("user", user);
+      }
     }),
   },
 });
-
-function extractSignupSource(path: string): string {
-  if (!path) "direct";
-  return "value";
-}

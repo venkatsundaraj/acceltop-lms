@@ -14,6 +14,7 @@ export const env = createEnv({
     GOOGLE_CLIENT_SECRET: z.string().min(1),
     NEXT_PUBLIC_BETTER_AUTH_URL: z.string().min(1),
     NEXT_PUBLIC_APP_URL: z.string().min(1),
+    ADMIN_EMAIL: z.string().min(1),
   },
   client: {},
   runtimeEnv: {
@@ -26,5 +27,6 @@ export const env = createEnv({
     GOOGLE_CLIENT_SECRET: process.env.GOOGLE_CLIENT_SECRET,
     NEXT_PUBLIC_BETTER_AUTH_URL: process.env.NEXT_PUBLIC_BETTER_AUTH_URL,
     NEXT_PUBLIC_APP_URL: process.env.NEXT_PUBLIC_APP_URL,
+    ADMIN_EMAIL: process.env.ADMIN_EMAIL,
   },
 });
