@@ -1,7 +1,7 @@
-import AdminAuthForm from "@/app/_components/admin/admin-auth-form";
+import OrgAuthForm from "@/app/_components/orgs/org-auth-form";
 import { getCurrentUser } from "@/lib/session";
-import { api } from "@/trpc/server";
 import { redirect } from "next/navigation";
+
 import { FC } from "react";
 
 interface pageProps {}
@@ -9,8 +9,8 @@ interface pageProps {}
 const page = async ({}: pageProps) => {
   const session = await getCurrentUser();
 
-  if (session && session.user.userRole === "admin") {
-    redirect("/super-admin/dashboard");
+  if (session && session.user.userRole === "org") {
+    redirect("/org/dashboard");
   }
   return (
     <section className="w-full bg-background h-screen max-h-screen grid grid-cols-1 md:grid-cols-2">
@@ -28,7 +28,7 @@ const page = async ({}: pageProps) => {
             <h1 className="text-primary text-secondary-heading leading-normal tracking-normal font-heading font-semibold">
               Login
             </h1>
-            <AdminAuthForm />
+            <OrgAuthForm />
           </div>
         </div>
       </div>

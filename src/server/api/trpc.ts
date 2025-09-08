@@ -6,11 +6,13 @@
  * TL;DR - This is where all the tRPC server stuff is created and plugged in. The pieces you will
  * need to use are documented accordingly near the end.
  */
-import { initTRPC } from "@trpc/server";
+import { initTRPC, TRPCError } from "@trpc/server";
 import superjson from "superjson";
 import { ZodError } from "zod";
-
+import * as schema from "@/server/db/schema";
 import { db } from "@/server/db";
+import { getCurrentUser } from "@/lib/session";
+import { eq } from "drizzle-orm";
 
 /**
  * 1. CONTEXT
@@ -96,6 +98,40 @@ const timingMiddleware = t.middleware(async ({ next, path }) => {
   return result;
 });
 
+const isAdmin = t.middleware(async (opts) => {
+  const user = await getCurrentUser();
+  console.log(user);
+  if (!user || !user.user.id) {
+    throw new TRPCError({ code: "UNAUTHORIZED" });
+  }
+  const [admin] = await db
+    .select()
+    .from(schema.user)
+    .where(eq(schema.user.id, user.user.id));
+
+  console.log(admin);
+
+  if (!admin) {
+    throw new TRPCError({
+      code: "NOT_FOUND",
+      message: "User not found",
+    });
+  }
+
+  if (admin.userRole !== "admin") {
+    throw new TRPCError({
+      code: "FORBIDDEN",
+      message: "Admin access required",
+    });
+  }
+
+  return opts.next({
+    ctx: {
+      ...admin,
+    },
+  });
+});
+
 /**
  * Public (unauthenticated) procedure
  *
@@ -104,3 +140,5 @@ const timingMiddleware = t.middleware(async ({ next, path }) => {
  * are logged in.
  */
 export const publicProcedure = t.procedure.use(timingMiddleware);
+
+export const adminProcedure = t.procedure.use(isAdmin);

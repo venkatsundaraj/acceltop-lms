@@ -7,27 +7,13 @@ import { auth } from "@/lib/auth";
 import { authClient, signIn, useSession } from "@/lib/auth-client";
 import { useRouter } from "next/navigation";
 
-interface AuthFormProps {}
+interface OrgAuthFormProps {}
 
-const AuthForm: FC<AuthFormProps> = ({}) => {
-  const router = useRouter();
-
-  const checkIfLoggedIn = async () => {
-    const { data } = await authClient.getSession();
-    return !!data?.session.id;
-  };
-
-  useEffect(() => {
-    checkIfLoggedIn().then((isLoggedIn) => {
-      if (isLoggedIn) {
-        router.push("/super-admin/dashboard");
-      }
-    });
-  }, []);
+const OrgAuthForm: FC<OrgAuthFormProps> = ({}) => {
   const loginHandler = async function () {
     const { data } = await signIn.social({
       provider: "google",
-      callbackURL: "/super-admin/dashboard",
+      callbackURL: "/org/dashboard",
     });
     console.log("clicked data", data);
   };
@@ -48,4 +34,4 @@ const AuthForm: FC<AuthFormProps> = ({}) => {
   );
 };
 
-export default AuthForm;
+export default OrgAuthForm;

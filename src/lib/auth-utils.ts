@@ -3,6 +3,15 @@ import { db } from "@/server/db";
 import * as schema from "@/server/db/schema";
 import { eq } from "drizzle-orm";
 
+let existedRoute: string;
+
+export const getSignupContext = function (referer: string | null | undefined) {
+  if (referer) {
+    existedRoute = referer;
+  }
+  return existedRoute;
+};
+
 export const extractSignupSource = function (path: string): string {
   if (path.includes("/super-admin/login")) {
     return "admin";
@@ -28,13 +37,6 @@ export const determineUserroleAndOrg = async function (
 }> {
   const adminEmails = env.ADMIN_EMAIL.split(",") || [];
 
-  //checkings
-  //   console.log(
-  //     "admin",
-  //     adminEmails,
-  //     adminEmails.includes(email),
-  //     signupSource === "admin"
-  //   );
   if (adminEmails.includes(email) && signupSource === "admin") {
     return { role: "admin", organizationId: null };
   }

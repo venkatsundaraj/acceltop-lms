@@ -2,12 +2,14 @@ import { env } from "@/env";
 import { db } from "@/server/db";
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
-import { createAuthMiddleware, oAuthProxy } from "better-auth/plugins";
-import { determineUserroleAndOrg, extractSignupSource } from "@/lib/auth-utils";
+import { createAuthMiddleware, oAuthProxy, role } from "better-auth/plugins";
+import {
+  determineUserroleAndOrg,
+  extractSignupSource,
+  getSignupContext,
+} from "@/lib/auth-utils";
 import * as schema from "@/server/db/schema";
 import { eq } from "drizzle-orm";
-
-let signupContextValue: string = "";
 
 const getTrustedOrigins = () => {
   const origins = new Set<string>();
@@ -66,25 +68,45 @@ export const auth = betterAuth({
       enabled: true,
     },
   },
-
+  user: {
+    additionalFields: {
+      userRole: {
+        type: "string",
+        required: false,
+      },
+      organizationId: {
+        type: "string",
+        required: false,
+      },
+      userStatus: {
+        type: "string",
+        required: false,
+      },
+      signupSource: {
+        type: "string",
+        required: false,
+      },
+    },
+  },
   hooks: {
     after: createAuthMiddleware(async (ctx) => {
       const session = ctx.context.newSession;
 
       let signupContext = ctx.request?.headers.get("referer");
+      const pathValue = getSignupContext(signupContext);
 
-      if (signupContext) {
-        signupContextValue = signupContext;
-      }
+      // if (signupContext) {
+      //   signupContextValue = signupContext;
+      // }
 
       if (ctx.context.newSession && ctx.context.newSession?.user.email) {
-        const signupSource = extractSignupSource(signupContextValue);
+        const signupSource = extractSignupSource(pathValue);
         const { role, organizationId } = await determineUserroleAndOrg(
           ctx.context.newSession?.user.email,
           signupSource
         );
-
         //updating the existing schema
+
         const user = await db
           .update(schema.user)
           .set({
