@@ -9,7 +9,7 @@ const page = async ({}) => {
     headers: await headers(),
   });
 
-  if (!session) {
+  if (session && session.user.userRole !== "org") {
     redirect("/org/login");
   }
   return (
