@@ -16,20 +16,17 @@ export default function SuperAdminAuthGuard({
       const { data } = await authClient.getSession();
       const user = await data?.user;
 
+      console.log(user);
+
       if (!user) {
-        router.push("/super-admin/login");
         return;
       }
 
-      if (user.userRole !== "admin" && pathname.startsWith("/super-admin")) {
+      if (user.userRole !== "admin") {
         router.push("/super-admin/login");
       }
 
-      if (
-        user &&
-        user.userRole === "admin" &&
-        pathname.startsWith("/super-admin")
-      ) {
+      if (user && user.userRole === "admin") {
         router.push("/super-admin/dashboard");
       }
     };
