@@ -100,7 +100,7 @@ const timingMiddleware = t.middleware(async ({ next, path }) => {
 
 const isAdmin = t.middleware(async (opts) => {
   const user = await getCurrentUser();
-  console.log(user);
+
   if (!user || !user.user.id) {
     throw new TRPCError({ code: "UNAUTHORIZED" });
   }
@@ -132,6 +132,38 @@ const isAdmin = t.middleware(async (opts) => {
   });
 });
 
+const isOrg = t.middleware(async (opts) => {
+  const user = await getCurrentUser();
+  if (!user || !user.user.id) {
+    throw new TRPCError({ code: "UNAUTHORIZED" });
+  }
+
+  const [org] = await db
+    .select()
+    .from(schema.user)
+    .where(eq(schema.user.id, user.user.id));
+
+  if (!org) {
+    throw new TRPCError({
+      code: "NOT_FOUND",
+      message: "Org not found",
+    });
+  }
+
+  if (org.userRole !== "org") {
+    throw new TRPCError({
+      code: "FORBIDDEN",
+      message: "Org access required",
+    });
+  }
+
+  return opts.next({
+    ctx: {
+      ...org,
+    },
+  });
+});
+
 /**
  * Public (unauthenticated) procedure
  *
@@ -142,3 +174,4 @@ const isAdmin = t.middleware(async (opts) => {
 export const publicProcedure = t.procedure.use(timingMiddleware);
 
 export const adminProcedure = t.procedure.use(isAdmin);
+export const orgProcedure = t.procedure.use(isOrg);

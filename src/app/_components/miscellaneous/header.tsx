@@ -27,7 +27,7 @@ const Header: FC<HeaderProps> = ({}) => {
             </li>
             <li className="text-background text-subtitle-heading leading-normal tracking-normal font-paragraph font-normal ">
               <Link
-                href={"/login"}
+                href={"/org/login"}
                 className={cn(
                   buttonVariants({ variant: "default", size: "lg" })
                 )}
