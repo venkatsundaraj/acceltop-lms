@@ -7,24 +7,22 @@ import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { Suspense } from "react";
 
-export const dynamic = "force-dynamic";
-
 interface pageProps {}
 
 const page = async ({}) => {
-  const session = await getCurrentUser();
+  // const session = await getCurrentUser();
 
-  console.log(
-    "session",
-    session,
-    session?.user,
-    session && session.user.userRole !== "admin",
-    !!session
-  );
+  // console.log(
+  //   "session",
+  //   session,
+  //   session?.user,
+  //   session && session.user.userRole !== "admin",
+  //   !!session
+  // );
 
-  if (!session || session.user.userRole !== "admin") {
-    redirect("/super-admin/login");
-  }
+  // if (!session || session.user.userRole !== "admin") {
+  //   redirect("/super-admin/login");
+  // }
   return (
     <Suspense fallback={<p>Loading...</p>}>
       <section className="w-full bg-background h-screen max-h-screen flex items-center justify-center">

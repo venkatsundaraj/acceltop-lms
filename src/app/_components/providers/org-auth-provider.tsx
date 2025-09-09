@@ -1,5 +1,5 @@
 "use client";
-import { authClient, sessionData, useSession } from "@/lib/auth-client";
+import { authClient } from "@/lib/auth-client";
 import { api } from "@/trpc/react";
 import { usePathname, useRouter } from "next/navigation";
 import React, {
@@ -10,39 +10,35 @@ import React, {
   useState,
 } from "react";
 
-interface SuperAdminAuthProviderProps {
+interface OrgAuthProviderProps {
   children: React.ReactNode;
 }
 
 interface AuthState {
   isLoading: boolean;
   isAuthenticated: boolean;
-  isAdmin: boolean;
+  isOrg: boolean;
   user: any | null;
 }
 
-const SuperAdminAuthContext = createContext<AuthState | null>(null);
+const OrgAuthContext = createContext<AuthState | null>(null);
 
 export const useSuperAdminAuth = () => {
-  const context = useContext(SuperAdminAuthContext);
+  const context = useContext(OrgAuthContext);
   if (!context) {
-    throw new Error(
-      "useSuperAdminAuth must be used within SuperAdminAuthProvider"
-    );
+    throw new Error("useSuperAdminAuth must be used within OrgAuthProvider");
   }
   return context;
 };
 
-const SuperAdminAuthProvider: FC<SuperAdminAuthProviderProps> = ({
-  children,
-}) => {
+const OrgAuthProvider: FC<OrgAuthProviderProps> = ({ children }) => {
   const router = useRouter();
   const pathname = usePathname();
 
   const [authState, setAuthState] = useState<AuthState>({
     isLoading: true,
     isAuthenticated: false,
-    isAdmin: false,
+    isOrg: false,
     user: null,
   });
 
@@ -74,33 +70,33 @@ const SuperAdminAuthProvider: FC<SuperAdminAuthProviderProps> = ({
         setAuthState({
           isLoading: false,
           isAuthenticated: false,
-          isAdmin: false,
+          isOrg: false,
           user: null,
         });
 
         // Only redirect to login if not already on login page
-        if (pathname !== "/super-admin/login") {
-          router.push("/super-admin/login");
+        if (pathname !== "/org/login") {
+          router.push("/org/login");
         }
         return;
       }
 
-      const isAdmin = user.userRole === "admin";
+      const isOrg = user.userRole === "org";
 
       setAuthState({
         isLoading: false,
         isAuthenticated: true,
-        isAdmin,
+        isOrg,
         user,
       });
 
-      if (isAdmin) {
-        if (pathname === "/super-admin/login") {
-          router.push("/super-admin/dashboard");
+      if (isOrg) {
+        if (pathname === "/org/login") {
+          router.push("/org/dashboard");
         }
       } else {
-        if (pathname.startsWith("/super-admin/dashboard")) {
-          router.push("/super-admin/login");
+        if (pathname.startsWith("/org/dashboard")) {
+          router.push("/org/login");
         }
       }
     } catch (error) {
@@ -108,7 +104,7 @@ const SuperAdminAuthProvider: FC<SuperAdminAuthProviderProps> = ({
       setAuthState({
         isLoading: false,
         isAuthenticated: false,
-        isAdmin: false,
+        isOrg: false,
         user: null,
       });
 
@@ -122,10 +118,10 @@ const SuperAdminAuthProvider: FC<SuperAdminAuthProviderProps> = ({
     checkAuthAndRole();
   }, [pathname]);
   return (
-    <SuperAdminAuthContext.Provider value={authState}>
+    <OrgAuthContext.Provider value={authState}>
       {children}
-    </SuperAdminAuthContext.Provider>
+    </OrgAuthContext.Provider>
   );
 };
 
-export default SuperAdminAuthProvider;
+export default OrgAuthProvider;

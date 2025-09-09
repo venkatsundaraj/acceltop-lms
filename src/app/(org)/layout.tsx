@@ -1,5 +1,5 @@
 import React, { FC, PropsWithChildren } from "react";
-import SuperAdminAuthProvider from "@/app/_components/providers/super-admin-auth-provider";
+import OrgAuthProvider from "@/app/_components/providers/org-auth-provider";
 
 interface layoutProps {
   children: React.ReactNode;
@@ -8,7 +8,7 @@ interface layoutProps {
 const layout = async ({ children }: layoutProps) => {
   return (
     <main className="w-screen max-h-screen h-full flex items-center justify-center bg-background">
-      <SuperAdminAuthProvider>{children}</SuperAdminAuthProvider>
+      <OrgAuthProvider>{children}</OrgAuthProvider>
     </main>
   );
 };

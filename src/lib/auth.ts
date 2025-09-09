@@ -2,11 +2,17 @@ import { env } from "@/env";
 import { db } from "@/server/db";
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
-import { createAuthMiddleware, oAuthProxy, role } from "better-auth/plugins";
+import {
+  createAuthMiddleware,
+  customSession,
+  oAuthProxy,
+  role,
+} from "better-auth/plugins";
 import {
   determineUserroleAndOrg,
   extractSignupSource,
   getSignupContext,
+  getUserWithRole,
 } from "@/lib/auth-utils";
 import * as schema from "@/server/db/schema";
 import { eq } from "drizzle-orm";
@@ -42,6 +48,15 @@ export const auth = betterAuth({
             productionURL:
               "https://acceltop-lms.vercel.app/api/auth/callback/google", // Replace with your domain
             currentURL: env.BETTER_AUTH_URL,
+          }),
+          customSession(async ({ user, session }) => {
+            const userData = getUserWithRole(user.id);
+            return {
+              user: {
+                ...userData,
+              },
+              session,
+            };
           }),
         ]
       : [],
