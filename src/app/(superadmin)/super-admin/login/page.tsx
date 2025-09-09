@@ -7,9 +7,8 @@ import { FC } from "react";
 interface pageProps {}
 
 const page = async ({}: pageProps) => {
-  const session = await getCurrentUser();
-
-  if (session && session.user.userRole === "admin") {
+  const user = await getCurrentUser();
+  if (user && user.session) {
     redirect("/super-admin/dashboard");
   }
   return (

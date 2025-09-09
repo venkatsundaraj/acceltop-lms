@@ -98,71 +98,71 @@ const timingMiddleware = t.middleware(async ({ next, path }) => {
   return result;
 });
 
-const isAdmin = t.middleware(async (opts) => {
-  const user = await getCurrentUser();
+// const isAdmin = t.middleware(async (opts) => {
+//   const user = await getCurrentUser();
 
-  if (!user || !user.user.id) {
-    throw new TRPCError({ code: "UNAUTHORIZED" });
-  }
-  const [admin] = await db
-    .select()
-    .from(schema.user)
-    .where(eq(schema.user.id, user.user.id));
+//   if (!user || !user.user.id) {
+//     throw new TRPCError({ code: "UNAUTHORIZED" });
+//   }
+//   const [admin] = await db
+//     .select()
+//     .from(schema.user)
+//     .where(eq(schema.user.id, user.user.id));
 
-  console.log(admin);
+//   console.log(admin);
 
-  if (!admin) {
-    throw new TRPCError({
-      code: "NOT_FOUND",
-      message: "User not found",
-    });
-  }
+//   if (!admin) {
+//     throw new TRPCError({
+//       code: "NOT_FOUND",
+//       message: "User not found",
+//     });
+//   }
 
-  if (admin.userRole !== "admin") {
-    throw new TRPCError({
-      code: "FORBIDDEN",
-      message: "Admin access required",
-    });
-  }
+//   if (admin.userRole !== "admin") {
+//     throw new TRPCError({
+//       code: "FORBIDDEN",
+//       message: "Admin access required",
+//     });
+//   }
 
-  return opts.next({
-    ctx: {
-      ...admin,
-    },
-  });
-});
+//   return opts.next({
+//     ctx: {
+//       ...admin,
+//     },
+//   });
+// });
 
-const isOrg = t.middleware(async (opts) => {
-  const user = await getCurrentUser();
-  if (!user || !user.user.id) {
-    throw new TRPCError({ code: "UNAUTHORIZED" });
-  }
+// const isOrg = t.middleware(async (opts) => {
+//   const user = await getCurrentUser();
+//   if (!user || !user.user.id) {
+//     throw new TRPCError({ code: "UNAUTHORIZED" });
+//   }
 
-  const [org] = await db
-    .select()
-    .from(schema.user)
-    .where(eq(schema.user.id, user.user.id));
+//   const [org] = await db
+//     .select()
+//     .from(schema.user)
+//     .where(eq(schema.user.id, user.user.id));
 
-  if (!org) {
-    throw new TRPCError({
-      code: "NOT_FOUND",
-      message: "Org not found",
-    });
-  }
+//   if (!org) {
+//     throw new TRPCError({
+//       code: "NOT_FOUND",
+//       message: "Org not found",
+//     });
+//   }
 
-  if (org.userRole !== "org") {
-    throw new TRPCError({
-      code: "FORBIDDEN",
-      message: "Org access required",
-    });
-  }
+//   if (org.userRole !== "org") {
+//     throw new TRPCError({
+//       code: "FORBIDDEN",
+//       message: "Org access required",
+//     });
+//   }
 
-  return opts.next({
-    ctx: {
-      ...org,
-    },
-  });
-});
+//   return opts.next({
+//     ctx: {
+//       ...org,
+//     },
+//   });
+// });
 
 /**
  * Public (unauthenticated) procedure
@@ -173,5 +173,5 @@ const isOrg = t.middleware(async (opts) => {
  */
 export const publicProcedure = t.procedure.use(timingMiddleware);
 
-export const adminProcedure = t.procedure.use(isAdmin);
-export const orgProcedure = t.procedure.use(isOrg);
+// export const adminProcedure = t.procedure.use(isAdmin);
+// export const orgProcedure = t.procedure.use(isOrg);

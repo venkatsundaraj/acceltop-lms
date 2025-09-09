@@ -8,9 +8,8 @@ import { redirect } from "next/navigation";
 interface pageProps {}
 
 const page = async ({}) => {
-  const session = await getCurrentUser();
-
-  if (!session) {
+  const user = await getCurrentUser();
+  if (!user || !user.session) {
     redirect("/super-admin/login");
   }
   return (
