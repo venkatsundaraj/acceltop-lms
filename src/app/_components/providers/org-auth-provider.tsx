@@ -74,10 +74,6 @@ const OrgAuthProvider: FC<OrgAuthProviderProps> = ({ children }) => {
           user: null,
         });
 
-        // Only redirect to login if not already on login page
-        if (pathname !== "/org/login") {
-          router.push("/org/login");
-        }
         return;
       }
 
