@@ -49,7 +49,6 @@ const SuperAdminAuthProvider: FC<SuperAdminAuthProviderProps> = ({
   const getCurrentUserWithRole = async () => {
     try {
       const { data } = await authClient.getSession();
-
       if (!data?.user.id) {
         return null;
       }

@@ -7,7 +7,7 @@ export const getCurrentUser = async function () {
     const data = await auth.api.getSession({
       headers: await headers(),
     });
-    console.log("data + user", data?.user);
+
     return data;
   } catch (err) {
     console.log(err);

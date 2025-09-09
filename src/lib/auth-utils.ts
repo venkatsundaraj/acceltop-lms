@@ -62,3 +62,18 @@ export const determineUserroleAndOrg = async function (
   }
   return { role: "org_user", organizationId: null };
 };
+
+export const getUserWithRole = async function (userId: string) {
+  try {
+    const [user] = await db
+      .select()
+      .from(schema.user)
+      .where(eq(schema.user.id, userId));
+    if (!user || !user.id) {
+      throw new Error("Something went wrong");
+    }
+    return user;
+  } catch (err) {
+    console.log(err);
+  }
+};
