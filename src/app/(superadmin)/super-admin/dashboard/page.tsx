@@ -8,19 +8,15 @@ import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { Suspense } from "react";
 
+export const revalidate = 0;
+
 interface pageProps {}
 
 const page = async ({}) => {
-  const session = await getCurrentUser();
-
-  const user = await session?.user;
-
-  console.log("session", user);
-
-  if (user && user.userRole !== "admin") {
+  const user = await getCurrentUser();
+  if (!user || !user.session) {
     redirect("/super-admin/login");
   }
-
   return (
     <section className="w-full bg-background h-screen max-h-screen flex items-center justify-center">
       <h1 className="text-primary text-7xl leading-normal tracking-normal font-heading font-semibold">
