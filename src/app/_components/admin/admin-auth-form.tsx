@@ -19,6 +19,7 @@ const AdminAuthForm: FC<AdminAuthFormProps> = ({}) => {
     });
     console.log("clicked data", data);
   };
+
   return (
     <Button
       aria-label="Sign in with Google"
