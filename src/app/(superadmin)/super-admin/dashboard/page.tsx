@@ -1,3 +1,4 @@
+import SignoutButton from "@/app/_components/admin/signout-button";
 import { auth } from "@/lib/auth";
 import { useSession } from "@/lib/auth-client";
 import { getCurrentUser } from "@/lib/session";
@@ -10,25 +11,22 @@ import { Suspense } from "react";
 interface pageProps {}
 
 const page = async ({}) => {
-  // const session = await getCurrentUser();
+  const session = await getCurrentUser();
 
-  // console.log(
-  //   "session",
-  //   session,
-  //   session?.user,
-  //   session && session.user.userRole !== "admin",
-  //   !!session
-  // );
+  const user = await session?.user;
 
-  // if (!session || session.user.userRole !== "admin") {
-  //   redirect("/super-admin/login");
-  // }
+  console.log("session", user);
+
+  if (user && user.userRole !== "admin") {
+    redirect("/super-admin/login");
+  }
 
   return (
     <section className="w-full bg-background h-screen max-h-screen flex items-center justify-center">
       <h1 className="text-primary text-7xl leading-normal tracking-normal font-heading font-semibold">
         Dashboard
       </h1>
+      <SignoutButton />
     </section>
   );
 };
