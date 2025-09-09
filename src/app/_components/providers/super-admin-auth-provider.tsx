@@ -1,38 +1,20 @@
-"use client";
-import { authClient } from "@/lib/auth-client";
-import { useRouter, usePathname } from "next/navigation";
-import { useEffect } from "react";
+import { api } from "@/trpc/server";
+import { redirect } from "next/navigation";
 
-export default function SuperAdminAuthGuard({
+export default async function SuperAdminAuthGuard({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const router = useRouter();
-  const pathname = usePathname();
+  const session = await api.admin.checkAuthStatus();
 
-  useEffect(() => {
-    const checkAuth = async () => {
-      const { data } = await authClient.getSession();
-      const user = await data?.user;
+  if (!session) {
+    redirect("/super-admin/login");
+  }
 
-      console.log(user);
-
-      if (!user) {
-        return;
-      }
-
-      if (user.userRole !== "admin") {
-        router.push("/super-admin/login");
-      }
-
-      if (user && user.userRole === "admin") {
-        router.push("/super-admin/dashboard");
-      }
-    };
-
-    checkAuth();
-  }, []);
+  if (session && session.user?.userRole === "admin") {
+    redirect("/super-admin/dashboard");
+  }
 
   return <>{children}</>;
 }

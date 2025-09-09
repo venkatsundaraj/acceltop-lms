@@ -23,6 +23,12 @@ const page = async ({}) => {
   // if (!session || session.user.userRole !== "admin") {
   //   redirect("/super-admin/login");
   // }
+
+  const session = await api.admin.checkAuthStatus();
+
+  if (!session || session.user?.userRole !== "admin") {
+    redirect("/super-admin/login");
+  }
   return (
     <section className="w-full bg-background h-screen max-h-screen flex items-center justify-center">
       <h1 className="text-primary text-7xl leading-normal tracking-normal font-heading font-semibold">

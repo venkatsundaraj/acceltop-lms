@@ -99,15 +99,17 @@ const timingMiddleware = t.middleware(async ({ next, path }) => {
 });
 
 const isAdmin = t.middleware(async (opts) => {
-  const user = await getCurrentUser();
+  const session = await getCurrentUser();
+  console.log(session);
+  const user = await session?.user;
 
-  if (!user || !user.user.id) {
+  if (!user || !user.id) {
     throw new TRPCError({ code: "UNAUTHORIZED" });
   }
   const [admin] = await db
     .select()
     .from(schema.user)
-    .where(eq(schema.user.id, user.user.id));
+    .where(eq(schema.user.id, user.id));
 
   console.log(admin);
 
@@ -133,15 +135,16 @@ const isAdmin = t.middleware(async (opts) => {
 });
 
 const isOrg = t.middleware(async (opts) => {
-  const user = await getCurrentUser();
-  if (!user || !user.user.id) {
+  const session = await getCurrentUser();
+  const user = await session?.user;
+  if (!user || !user.id) {
     throw new TRPCError({ code: "UNAUTHORIZED" });
   }
 
   const [org] = await db
     .select()
     .from(schema.user)
-    .where(eq(schema.user.id, user.user.id));
+    .where(eq(schema.user.id, user.id));
 
   if (!org) {
     throw new TRPCError({
