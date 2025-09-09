@@ -35,7 +35,7 @@ export default function SuperAdminAuthGuard({
     };
 
     checkAuth();
-  }, [pathname, router]);
+  }, []);
 
   return <>{children}</>;
 }

@@ -24,13 +24,11 @@ const page = async ({}) => {
   //   redirect("/super-admin/login");
   // }
   return (
-    <Suspense fallback={<p>Loading...</p>}>
-      <section className="w-full bg-background h-screen max-h-screen flex items-center justify-center">
-        <h1 className="text-primary text-7xl leading-normal tracking-normal font-heading font-semibold">
-          Dashboard
-        </h1>
-      </section>
-    </Suspense>
+    <section className="w-full bg-background h-screen max-h-screen flex items-center justify-center">
+      <h1 className="text-primary text-7xl leading-normal tracking-normal font-heading font-semibold">
+        Dashboard
+      </h1>
+    </section>
   );
 };
 
