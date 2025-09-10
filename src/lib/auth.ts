@@ -1,15 +1,19 @@
 import { env } from "@/env";
+import {
+  determineUserroleAndOrg,
+  extractSignupSource,
+  getSignupContext,
+  getUserWithRole,
+} from "@/lib/auth-utils";
 import { db } from "@/server/db";
 import { betterAuth } from "better-auth";
+import * as schema from "@/server/db/schema";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import {
   createAuthMiddleware,
   customSession,
   oAuthProxy,
-  role,
 } from "better-auth/plugins";
-import { extractSignupSource, getUserWithRole } from "@/lib/auth-utils";
-import * as schema from "@/server/db/schema";
 import { eq } from "drizzle-orm";
 
 const getTrustedOrigins = () => {
@@ -101,12 +105,77 @@ export const auth = betterAuth({
   hooks: {
     after: createAuthMiddleware(async (ctx) => {
       const session = ctx.context.newSession;
-      console.log(session);
-      if (session) {
-        ctx.redirect("/super-admin/dashboard");
-      } else {
-        ctx.redirect("/super-admin/login");
+
+      let signupContext = ctx.request?.headers.get("referer");
+      const pathValue = getSignupContext(signupContext);
+
+      // if (signupContext) {
+      //   signupContextValue = signupContext;
+      // }
+
+      if (ctx.context.newSession && ctx.context.newSession?.user.email) {
+        const signupSource = extractSignupSource(pathValue);
+        const { role, organizationId } = await determineUserroleAndOrg(
+          ctx.context.newSession?.user.email,
+          signupSource
+        );
+        //updating the existing schema
+
+        const [user] = await db
+          .update(schema.user)
+          .set({
+            userRole: role,
+            organizationId: organizationId,
+            userStatus: role === "admin" ? "active" : "pending",
+            signupSource: signupSource,
+          })
+          .where(eq(schema.user.id, session?.user.id!))
+          .returning();
+
+        console.log(user);
+
+        if (user.userRole === "admin") {
+          return ctx.redirect("/super-admin/dashboard");
+        }
+
+        if (user.userRole === "org") {
+          return ctx.redirect("/org/dashboard");
+        }
+
+        if (user.userRole === "org_user") {
+          return ctx.redirect("/org/dashboard");
+        }
       }
+
+      ctx.redirect("/org/login");
     }),
   },
 });
+
+// let signupContext = ctx.request?.headers.get("referer");
+// const pathValue = getSignupContext(signupContext);
+
+// // if (signupContext) {
+// //   signupContextValue = signupContext;
+// // }
+
+// if (ctx.context.newSession && ctx.context.newSession?.user.email) {
+//   const signupSource = extractSignupSource(pathValue);
+//   const { role, organizationId } = await determineUserroleAndOrg(
+//     ctx.context.newSession?.user.email,
+//     signupSource
+//   );
+//   //updating the existing schema
+
+//   const user = await db
+//     .update(schema.user)
+//     .set({
+//       userRole: role,
+//       organizationId: organizationId,
+//       userStatus: role === "admin" ? "active" : "pending",
+//       signupSource: signupSource,
+//     })
+//     .where(eq(schema.user.id, session?.user.id!))
+//     .returning();
+//   console.log("user", user);
+// }

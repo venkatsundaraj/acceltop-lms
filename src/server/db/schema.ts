@@ -7,9 +7,47 @@ import {
   boolean,
   integer,
   json,
+  pgEnum,
 } from "drizzle-orm/pg-core";
 
 export const createTable = pgTableCreator((name) => `acceltop_${name}`);
+
+export const userRoleEnum = pgEnum("user_role", ["admin", "org_user", "org"]);
+export const userStatusEnum = pgEnum("user_status", [
+  "active",
+  "inactive",
+  "pending",
+]);
+
+export const organisation = pgTable("organisation", {
+  id: text("id").primaryKey(),
+  name: text("name").notNull(),
+  slug: text("slug").notNull().unique(),
+  website: text("website"),
+  description: text("description"),
+  logo: text("logo"),
+  bannerImage: text("banner_image"),
+  contactEmail: text("contact_email"),
+  isPublic: boolean("is_public").default(false).notNull(),
+  isSetupCompleted: boolean("is_setup_completed").default(false).notNull(),
+  status: userStatusEnum("status").default("active").notNull(),
+  createdAt: timestamp("created_at")
+    .$defaultFn(() => new Date())
+    .notNull(),
+  updatedAt: timestamp("updated_at")
+    .$defaultFn(() => new Date())
+    .notNull(),
+  settings: json("settings").$type<{
+    allowStudentSelfSignup?: boolean;
+    requireStudentApproval?: boolean;
+    customTheme?: {
+      primaryColor?: string;
+      secondaryColor?: string;
+      logo?: string;
+    };
+    features?: string[];
+  }>(),
+});
 
 export const user = pgTable("user", {
   id: text("id").primaryKey(),
@@ -25,7 +63,24 @@ export const user = pgTable("user", {
   updatedAt: timestamp("updated_at")
     .$defaultFn(() => /* @__PURE__ */ new Date())
     .notNull(),
+
+  //addtion
+  phone: text("phone"),
+  userRole: userRoleEnum("role").default("org_user").notNull(),
+  userStatus: userStatusEnum("status").default("pending").notNull(),
+  organizationId: text("organisation_id").references(() => organisation.id, {
+    onDelete: "cascade",
+  }),
+  signupSource: text("signup_source"),
+  metadata: json("metadata").$type<{
+    permissions?: string[];
+    preferences?: Record<string, any>;
+    onboardingCompleted?: boolean;
+    studentInfo?: { studentId?: string; grade?: string; dateOfBirth?: string };
+  }>(),
 });
+
+//default
 
 export const session = pgTable("session", {
   id: text("id").primaryKey(),

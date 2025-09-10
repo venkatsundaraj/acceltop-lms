@@ -7,6 +7,11 @@ import { FC } from "react";
 interface pageProps {}
 
 const page = async ({}: pageProps) => {
+  const user = await getCurrentUser();
+  if (user && user.session) {
+    redirect("/org/dashboard");
+  }
+
   return (
     <section className="w-full bg-background h-screen max-h-screen grid grid-cols-1 md:grid-cols-2">
       <div className="md:h-full shadow-md flex items-center justify-center">
