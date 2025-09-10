@@ -9,6 +9,16 @@ interface pageProps {}
 
 const page = async ({}: pageProps) => {
   const user = await getCurrentUser();
+
+  if (
+    user &&
+    user.session &&
+    user.user.email &&
+    env.ADMIN_EMAIL.includes(user.user.email)
+  ) {
+    redirect("/super-admin/dashboard");
+  }
+
   if (
     user &&
     user.session &&
