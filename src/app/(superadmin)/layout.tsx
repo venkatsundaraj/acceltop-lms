@@ -1,5 +1,7 @@
 import React, { FC, PropsWithChildren } from "react";
 import SuperAdminAuthProvider from "@/app/_components/providers/super-admin-auth-provider";
+import { getCurrentUser } from "@/lib/session";
+import { redirect } from "next/navigation";
 
 interface layoutProps {
   children: React.ReactNode;

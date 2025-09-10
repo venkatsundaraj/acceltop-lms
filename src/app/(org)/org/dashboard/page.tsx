@@ -9,7 +9,8 @@ interface pageProps {}
 
 const page = async ({}) => {
   const user = await getCurrentUser();
-  if (!user || !user.session) {
+  const userRole = await user?.user;
+  if (!user || !user.session || userRole?.userRole !== "org") {
     redirect("/org/login");
   }
 

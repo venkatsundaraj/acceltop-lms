@@ -14,7 +14,8 @@ interface pageProps {}
 
 const page = async ({}) => {
   const user = await getCurrentUser();
-  if (!user || !user.session) {
+  const userRole = await user?.user;
+  if (!user || !user.session || userRole?.userRole !== "admin") {
     redirect("/super-admin/login");
   }
   return (

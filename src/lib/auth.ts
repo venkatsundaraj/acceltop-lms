@@ -127,18 +127,18 @@ export const auth = betterAuth({
             userRole: role,
             organizationId: organizationId,
             userStatus: role === "admin" ? "active" : "pending",
-            signupSource: signupSource,
+            signupSource: role,
           })
           .where(eq(schema.user.id, session?.user.id!))
           .returning();
 
-        console.log(user);
-
         if (user.userRole === "admin") {
+          console.log("admin redirection");
           return ctx.redirect("/super-admin/dashboard");
         }
 
         if (user.userRole === "org") {
+          console.log("org redirection");
           return ctx.redirect("/org/dashboard");
         }
 
@@ -147,7 +147,10 @@ export const auth = betterAuth({
         }
       }
 
-      ctx.redirect("/org/login");
+      if (!session || !session.user) {
+        console.log("final redirection");
+        ctx.redirect("/");
+      }
     }),
   },
 });
