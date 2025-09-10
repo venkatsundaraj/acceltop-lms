@@ -109,10 +109,6 @@ export const auth = betterAuth({
       let signupContext = ctx.request?.headers.get("referer");
       const pathValue = getSignupContext(signupContext);
 
-      // if (signupContext) {
-      //   signupContextValue = signupContext;
-      // }
-
       if (ctx.context.newSession && ctx.context.newSession?.user.email) {
         const signupSource = extractSignupSource(pathValue);
         const { role, organizationId } = await determineUserroleAndOrg(

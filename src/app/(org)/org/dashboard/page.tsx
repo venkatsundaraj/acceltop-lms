@@ -12,21 +12,21 @@ const page = async ({}) => {
   const user = await getCurrentUser();
 
   if (
-    !user ||
-    !user.session ||
-    !user.user.email ||
-    env.ADMIN_EMAIL.includes(user.user.email)
-  ) {
-    redirect("/org/login");
-  }
-
-  if (
     user &&
     user.session &&
     user.user.email &&
     env.ADMIN_EMAIL.includes(user.user.email)
   ) {
     redirect("/super-admin/dashboard");
+  }
+
+  if (
+    !user ||
+    !user.session ||
+    !user.user.email ||
+    env.ADMIN_EMAIL.includes(user.user.email)
+  ) {
+    redirect("/org/login");
   }
 
   return (
