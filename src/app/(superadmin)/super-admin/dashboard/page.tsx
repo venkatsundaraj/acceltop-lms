@@ -1,4 +1,5 @@
 import SignoutButton from "@/app/_components/admin/signout-button";
+import { env } from "@/env";
 import { auth } from "@/lib/auth";
 import { useSession } from "@/lib/auth-client";
 import { getCurrentUser } from "@/lib/session";
@@ -14,8 +15,22 @@ interface pageProps {}
 
 const page = async ({}) => {
   const user = await getCurrentUser();
-  const userRole = await user?.user;
-  if (!user || !user.session || userRole?.userRole !== "admin") {
+
+  if (
+    user &&
+    user.session &&
+    user.user.email &&
+    !env.ADMIN_EMAIL.includes(user.user.email)
+  ) {
+    redirect("/");
+  }
+
+  if (
+    !user ||
+    !user.session ||
+    !user.user.email ||
+    !env.ADMIN_EMAIL.includes(user.user.email)
+  ) {
     redirect("/super-admin/login");
   }
   return (

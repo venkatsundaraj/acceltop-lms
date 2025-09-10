@@ -1,5 +1,6 @@
 import SignoutButton from "@/app/_components/admin/signout-button";
 import OrgSignoutButton from "@/app/_components/orgs/org-sign-out-button";
+import { env } from "@/env";
 import { auth } from "@/lib/auth";
 import { getCurrentUser } from "@/lib/session";
 import { headers } from "next/headers";
@@ -9,8 +10,13 @@ interface pageProps {}
 
 const page = async ({}) => {
   const user = await getCurrentUser();
-  const userRole = await user?.user;
-  if (!user || !user.session || userRole?.userRole !== "org") {
+
+  if (
+    !user ||
+    !user.session ||
+    !user.user.email ||
+    env.ADMIN_EMAIL.includes(user.user.email)
+  ) {
     redirect("/org/login");
   }
 

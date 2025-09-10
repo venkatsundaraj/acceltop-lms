@@ -49,7 +49,7 @@ export const auth = betterAuth({
             currentURL: env.BETTER_AUTH_URL,
           }),
           customSession(async ({ user, session }) => {
-            const userData = getUserWithRole(user.id);
+            const userData = await getUserWithRole(user.id);
             return {
               user: {
                 ...userData,
@@ -141,15 +141,15 @@ export const auth = betterAuth({
           console.log("org redirection");
           return ctx.redirect("/org/dashboard");
         }
-
-        if (user.userRole === "org_user") {
-          return ctx.redirect("/org/dashboard");
-        }
       }
 
-      if (!session || !session.user) {
+      if (
+        !session ||
+        !session.user ||
+        !env.ADMIN_EMAIL.includes(session.user.email)
+      ) {
         console.log("final redirection");
-        ctx.redirect("/");
+        ctx.redirect("/org/login");
       }
     }),
   },

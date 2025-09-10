@@ -1,4 +1,5 @@
 import AdminAuthForm from "@/app/_components/admin/admin-auth-form";
+import { env } from "@/env";
 import { getCurrentUser } from "@/lib/session";
 import { api } from "@/trpc/server";
 import { redirect } from "next/navigation";
@@ -10,8 +11,21 @@ interface pageProps {}
 
 const page = async ({}: pageProps) => {
   const user = await getCurrentUser();
-  const role = await user?.user;
-  if (user && user.session && role?.userRole === "admin") {
+
+  if (
+    user &&
+    user.session &&
+    user.user.email &&
+    !env.ADMIN_EMAIL.includes(user.user.email)
+  ) {
+    redirect("/");
+  }
+  if (
+    user &&
+    user.session &&
+    user.user.email &&
+    env.ADMIN_EMAIL.includes(user.user.email)
+  ) {
     redirect("/super-admin/dashboard");
   }
   return (

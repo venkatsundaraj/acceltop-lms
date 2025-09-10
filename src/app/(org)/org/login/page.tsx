@@ -1,6 +1,7 @@
 import OrgAuthForm from "@/app/_components/orgs/org-auth-form";
 import { getCurrentUser } from "@/lib/session";
 import { redirect } from "next/navigation";
+import { env } from "@/env";
 
 import { FC } from "react";
 
@@ -8,8 +9,12 @@ interface pageProps {}
 
 const page = async ({}: pageProps) => {
   const user = await getCurrentUser();
-  const role = await user?.user;
-  if (user && user.session && role?.userRole === "org") {
+  if (
+    user &&
+    user.session &&
+    user.user.email &&
+    !env.ADMIN_EMAIL.includes(user.user.email)
+  ) {
     redirect("/org/dashboard");
   }
 
