@@ -2,7 +2,15 @@ import { env } from "@/env";
 import { db } from "@/server/db";
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
-import { createAuthMiddleware, oAuthProxy } from "better-auth/plugins";
+import {
+  createAuthMiddleware,
+  customSession,
+  oAuthProxy,
+  role,
+} from "better-auth/plugins";
+import { extractSignupSource, getUserWithRole } from "@/lib/auth-utils";
+import * as schema from "@/server/db/schema";
+import { eq } from "drizzle-orm";
 
 const getTrustedOrigins = () => {
   const origins = new Set<string>();
@@ -20,7 +28,7 @@ const getTrustedOrigins = () => {
 
   add("http://localhost:3000"); // local dev
   add("http://localhost:3001"); // local dev
-  console.log(origins);
+
   return Array.from(origins);
 };
 
@@ -32,8 +40,18 @@ export const auth = betterAuth({
     env.NODE_ENV === "production"
       ? [
           oAuthProxy({
-            productionURL: "http://localhost:3000", // Replace with your domain
+            productionURL:
+              "https://acceltop-lms.vercel.app/api/auth/callback/google", // Replace with your domain
             currentURL: env.BETTER_AUTH_URL,
+          }),
+          customSession(async ({ user, session }) => {
+            const userData = getUserWithRole(user.id);
+            return {
+              user: {
+                ...userData,
+              },
+              session,
+            };
           }),
         ]
       : [],
@@ -44,7 +62,7 @@ export const auth = betterAuth({
       clientSecret: env.GOOGLE_CLIENT_SECRET as string,
       redirectURI:
         env.NODE_ENV === "production"
-          ? `${env.VERCEL_URL}/api/auth/callback/google`
+          ? `${env.BETTER_AUTH_URL}/api/auth/callback/google`
           : "http://localhost:3000/api/auth/callback/google",
     },
   },
@@ -58,6 +76,26 @@ export const auth = betterAuth({
   account: {
     accountLinking: {
       enabled: true,
+    },
+  },
+  user: {
+    additionalFields: {
+      userRole: {
+        type: "string",
+        required: false,
+      },
+      organizationId: {
+        type: "string",
+        required: false,
+      },
+      userStatus: {
+        type: "string",
+        required: false,
+      },
+      signupSource: {
+        type: "string",
+        required: false,
+      },
     },
   },
   hooks: {
