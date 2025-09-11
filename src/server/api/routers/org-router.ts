@@ -3,7 +3,8 @@ import { createTRPCRouter, orgProcedure } from "@/server/api/trpc";
 import * as schema from "@/server/db/schema";
 import { TRPCError } from "@trpc/server";
 import { eq } from "drizzle-orm";
-import z, { nanoid } from "zod";
+import z from "zod";
+import { nanoid } from "nanoid";
 
 export const orgRouter = createTRPCRouter({
   getOrg: orgProcedure.query(({ ctx }) => {
