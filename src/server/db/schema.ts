@@ -19,6 +19,23 @@ export const userStatusEnum = pgEnum("user_status", [
   "pending",
 ]);
 
+export const organisationTypeEnum = pgEnum("organisation_type", [
+  "creator",
+  "institute",
+  "publisher",
+  "tutor",
+]);
+export const examTypeEnum = pgEnum("examType", [
+  "jee",
+  "upsc",
+  "neet",
+  "cat",
+  "banking",
+  "ssc",
+  "gate",
+  "other",
+]);
+
 export const organisation = pgTable("organisation", {
   id: text("id").primaryKey(),
   name: text("name").notNull(),
@@ -28,9 +45,21 @@ export const organisation = pgTable("organisation", {
   logo: text("logo"),
   bannerImage: text("banner_image"),
   contactEmail: text("contact_email"),
+  phone: text("phone"),
+  address: text("address"),
+
+  //status
   isPublic: boolean("is_public").default(false).notNull(),
   isSetupCompleted: boolean("is_setup_completed").default(false).notNull(),
   status: userStatusEnum("status").default("active").notNull(),
+
+  //area focused
+  organisationType: organisationTypeEnum("organisation_type")
+    .default("creator")
+    .notNull(),
+  focusExams: json("focus_exams").$type<string[]>(),
+
+  //timestamps
   createdAt: timestamp("created_at")
     .$defaultFn(() => new Date())
     .notNull(),
@@ -46,6 +75,13 @@ export const organisation = pgTable("organisation", {
       logo?: string;
     };
     features?: string[];
+    onBoardingStep?: number;
+    subscriptionPlan?: "free" | "premium" | "basic";
+    billing?: {
+      planStartDate?: string;
+      planEndDate?: string;
+      autoRenew?: boolean;
+    };
   }>(),
 });
 
@@ -57,6 +93,9 @@ export const user = pgTable("user", {
     .$defaultFn(() => false)
     .notNull(),
   image: text("image"),
+  phone: text("phone"),
+
+  //timestamps
   createdAt: timestamp("created_at")
     .$defaultFn(() => /* @__PURE__ */ new Date())
     .notNull(),
@@ -65,18 +104,35 @@ export const user = pgTable("user", {
     .notNull(),
 
   //addtion
-  phone: text("phone"),
+  lastLoginAt: timestamp("last_login_at"),
+  signupSource: text("signup_source"),
+
+  //enum and roles
   userRole: userRoleEnum("role").default("org_user").notNull(),
   userStatus: userStatusEnum("status").default("pending").notNull(),
+
+  //relation
   organizationId: text("organisation_id").references(() => organisation.id, {
     onDelete: "cascade",
   }),
-  signupSource: text("signup_source"),
+
+  //metadata
   metadata: json("metadata").$type<{
     permissions?: string[];
     preferences?: Record<string, any>;
     onboardingCompleted?: boolean;
-    studentInfo?: { studentId?: string; grade?: string; dateOfBirth?: string };
+    studentInfo?: {
+      studentId?: string;
+      grade?: string;
+      dateOfBirth?: string;
+      parentEmail?: string;
+      parentPhone?: string;
+    };
+    organisationInfo: {
+      department?: string;
+      designation: string;
+      permissions?: string[];
+    };
   }>(),
 });
 
@@ -125,3 +181,5 @@ export const verification = pgTable("verification", {
     () => /* @__PURE__ */ new Date()
   ),
 });
+
+export type UserSchema = typeof user.$inferSelect;

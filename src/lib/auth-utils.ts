@@ -40,25 +40,6 @@ export const determineUserroleAndOrg = async function (
     return { role: "admin", organizationId: null };
   }
 
-  // if (signupSource === "admin" && !adminEmails.includes(email)) {
-  //   throw new Error("Unauthorized");
-  // }
-  // if (signupSource === "org") {
-  //   return { role: "org", organizationId: null };
-  // }
-  // if (signupSource.startsWith("student_")) {
-  //   const slug = signupSource.replace("student_", "");
-
-  //   const org = await db
-  //     .select()
-  //     .from(schema.organisation)
-  //     .where(eq(schema.organisation.slug, slug));
-
-  //   if (org.length > 0) {
-  //     // organisation id for the user
-  //     return { role: "org_user", organizationId: org[0].id };
-  //   }
-  // }
   return { role: "org", organizationId: null };
 };
 

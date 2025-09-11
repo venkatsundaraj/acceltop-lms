@@ -25,7 +25,7 @@ const page = async ({}: pageProps) => {
     user.user.email &&
     !env.ADMIN_EMAIL.includes(user.user.email)
   ) {
-    redirect("/org/dashboard");
+    redirect("/org/onboarding");
   }
 
   return (

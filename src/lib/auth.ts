@@ -135,7 +135,7 @@ export const auth = betterAuth({
 
         if (user.userRole === "org") {
           console.log("org redirection");
-          return ctx.redirect("/org/dashboard");
+          return ctx.redirect("/org/onboarding");
         }
       }
 
@@ -150,31 +150,3 @@ export const auth = betterAuth({
     }),
   },
 });
-
-// let signupContext = ctx.request?.headers.get("referer");
-// const pathValue = getSignupContext(signupContext);
-
-// // if (signupContext) {
-// //   signupContextValue = signupContext;
-// // }
-
-// if (ctx.context.newSession && ctx.context.newSession?.user.email) {
-//   const signupSource = extractSignupSource(pathValue);
-//   const { role, organizationId } = await determineUserroleAndOrg(
-//     ctx.context.newSession?.user.email,
-//     signupSource
-//   );
-//   //updating the existing schema
-
-//   const user = await db
-//     .update(schema.user)
-//     .set({
-//       userRole: role,
-//       organizationId: organizationId,
-//       userStatus: role === "admin" ? "active" : "pending",
-//       signupSource: signupSource,
-//     })
-//     .where(eq(schema.user.id, session?.user.id!))
-//     .returning();
-//   console.log("user", user);
-// }

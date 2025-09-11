@@ -13,7 +13,7 @@ const OrgAuthForm: FC<OrgAuthFormProps> = ({}) => {
   const loginHandler = async function () {
     const { data } = await signIn.social({
       provider: "google",
-      callbackURL: "/org/dashboard",
+      callbackURL: "/org/onboarding",
     });
     console.log("clicked data", data);
   };
