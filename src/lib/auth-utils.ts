@@ -2,6 +2,7 @@ import { env } from "@/env";
 import { db } from "@/server/db";
 import * as schema from "@/server/db/schema";
 import { eq } from "drizzle-orm";
+import { nanoid } from "nanoid";
 
 let existedRoute: string;
 export const getSignupContext = function (referer: string | null | undefined) {

@@ -2,10 +2,24 @@ import { cn } from "@/lib/utils";
 import Link from "next/link";
 import { FC } from "react";
 import { buttonVariants } from "@/app/_components/ui/button";
+import { getCurrentUser } from "@/lib/session";
+import { api } from "@/trpc/server";
+import * as schema from "@/server/db/schema";
+import { db } from "@/server/db";
+import { eq } from "drizzle-orm";
+import { handleTRPCCall } from "@/lib/handle-trpc-error";
 
 interface HeaderProps {}
 
-const Header: FC<HeaderProps> = ({}) => {
+const Header = async ({}: HeaderProps) => {
+  const result = await handleTRPCCall(() => api.org.getOrg());
+
+  if (!result.data || !result.data.id || result.error) {
+    console.log(result.error);
+  }
+
+  // const org = await db.select().from(schema.organisation).where(eq(schema.organisation.id, session?.user.organizationId!))
+
   return (
     <header
       className={cn(
@@ -26,14 +40,25 @@ const Header: FC<HeaderProps> = ({}) => {
               <Link href={"/pricing"}>Pricing</Link>
             </li>
             <li className="text-background text-subtitle-heading leading-normal tracking-normal font-paragraph font-normal ">
-              <Link
-                href={"/org/login"}
-                className={cn(
-                  buttonVariants({ variant: "default", size: "lg" })
-                )}
-              >
-                Login
-              </Link>
+              {result.data?.id ? (
+                <Link
+                  href={`/org/${result.data.slug}/app`}
+                  className={cn(
+                    buttonVariants({ variant: "default", size: "lg" })
+                  )}
+                >
+                  Home
+                </Link>
+              ) : (
+                <Link
+                  href={"/org/login"}
+                  className={cn(
+                    buttonVariants({ variant: "default", size: "lg" })
+                  )}
+                >
+                  Login
+                </Link>
+              )}
             </li>
           </ul>
         </nav>

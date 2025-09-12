@@ -1,7 +1,18 @@
-import { LucideProps, Check } from "lucide-react";
+import {
+  LucideProps,
+  Check,
+  LayoutDashboard,
+  BookOpenCheck,
+  BookCheck,
+  User,
+} from "lucide-react";
 
 export const Icons = {
   Check,
+  LayoutDashboard,
+  BookOpenCheck,
+  BookCheck,
+  User,
   Google: (props: LucideProps) => (
     <svg {...props} className="w-5 h-5" viewBox="0 0 24 24">
       {/* Google icon */}

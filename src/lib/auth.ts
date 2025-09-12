@@ -15,6 +15,7 @@ import {
   oAuthProxy,
 } from "better-auth/plugins";
 import { eq } from "drizzle-orm";
+import { getCurrentUser } from "./session";
 
 const getTrustedOrigins = () => {
   const origins = new Set<string>();
@@ -104,6 +105,14 @@ export const auth = betterAuth({
   },
   hooks: {
     after: createAuthMiddleware(async (ctx) => {
+      const isAuthCallback =
+        ctx.request?.url.includes("/api/auth/callback") ||
+        ctx.request?.url.includes("/api/auth/sign-in") ||
+        ctx.request?.url.includes("/api/auth/sign-up");
+
+      if (!isAuthCallback) {
+        return;
+      }
       const session = ctx.context.newSession;
 
       let signupContext = ctx.request?.headers.get("referer");
@@ -115,13 +124,13 @@ export const auth = betterAuth({
           ctx.context.newSession?.user.email,
           signupSource
         );
+
         //updating the existing schema
 
         const [user] = await db
           .update(schema.user)
           .set({
             userRole: role,
-            organizationId: organizationId,
             userStatus: role === "admin" ? "active" : "pending",
             signupSource: role,
           })
@@ -137,15 +146,12 @@ export const auth = betterAuth({
           console.log("org redirection");
           return ctx.redirect("/org/onboarding");
         }
-      }
-
-      if (
-        !session ||
-        !session.user ||
-        !env.ADMIN_EMAIL.includes(session.user.email)
-      ) {
-        console.log("final redirection");
-        ctx.redirect("/org/login");
+      } else {
+        const user = await getCurrentUser();
+        if (user?.user.userRole === "admin") {
+          ctx.redirect("/super-admin/dashboard");
+        }
+        ctx.redirect("/");
       }
     }),
   },

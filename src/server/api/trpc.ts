@@ -137,14 +137,19 @@ const isAdmin = t.middleware(async (opts) => {
 const isOrg = t.middleware(async (opts) => {
   const session = await getCurrentUser();
 
-  if (!session || !session.user || !session.user.id) {
+  if (
+    !session ||
+    !session.user ||
+    !session.user.id ||
+    !session.user.organizationId
+  ) {
     throw new TRPCError({ code: "UNAUTHORIZED" });
   }
 
   const [org] = await db
     .select()
-    .from(schema.user)
-    .where(eq(schema.user.id, session.user.id));
+    .from(schema.organisation)
+    .where(eq(schema.organisation.id, session.user.organizationId));
 
   if (!org) {
     throw new TRPCError({
@@ -153,7 +158,7 @@ const isOrg = t.middleware(async (opts) => {
     });
   }
 
-  if (org.userRole !== "org") {
+  if (!org.isSetupCompleted) {
     throw new TRPCError({
       code: "FORBIDDEN",
       message: "Org access required",

@@ -1,6 +1,5 @@
 import React, { FC, PropsWithChildren } from "react";
 import { Toaster } from "@/app/_components/ui/sonner";
-import OrgAuthProvider from "@/app/_components/providers/org-auth-provider";
 
 interface layoutProps {
   children: React.ReactNode;

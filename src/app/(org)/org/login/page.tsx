@@ -4,6 +4,8 @@ import { redirect } from "next/navigation";
 import { env } from "@/env";
 
 import { FC } from "react";
+import { handleTRPCCall } from "@/lib/handle-trpc-error";
+import { api } from "@/trpc/server";
 
 interface pageProps {}
 

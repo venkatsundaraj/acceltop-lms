@@ -183,3 +183,4 @@ export const verification = pgTable("verification", {
 });
 
 export type UserSchema = typeof user.$inferSelect;
+export type OrgSchema = typeof organisation.$inferSelect;

@@ -10,6 +10,7 @@ import { FC } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { toast } from "sonner";
 import z from "zod";
+import OrgSignoutButton from "./org-sign-out-button";
 
 interface OnboardingModalProps {
   name: string;
@@ -89,7 +90,7 @@ const OnboardingModal: FC<OnboardingModalProps> = ({
     <>
       <form
         onSubmit={handleSubmit(submitHandler)}
-        className="bg-background  flex items-center justify-center gap-8 flex-col px-12 py-8 mt-12 rounded-sm shadow-2xl max-w-7xl"
+        className="bg-background  flex items-center justify-center gap-8 flex-col px-12 py-8 rounded-sm shadow-2xl max-w-7xl"
       >
         <h1 className="text-primary text-2xl md:text-3xl xl:text-4xl leading-normal text-center tracking-tight font-heading font-bold">
           Please update your details <br />
