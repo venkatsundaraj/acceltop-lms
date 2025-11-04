@@ -8,14 +8,14 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/app/_components/ui/sidebar";
-import { UserSchema } from "@/server/db/schema";
+import { OrgSchema, UserSchema } from "@/server/db/schema";
 import { FC } from "react";
 import { orgNavbarItems } from "@/config/marketing";
 import Link from "next/link";
 import { Icons } from "../miscellaneous/lucide-react";
 
 interface AppSidebarProps {
-  user: UserSchema;
+  user: OrgSchema;
 }
 
 export const AppSidebar: FC<AppSidebarProps> = function ({ user }) {
