@@ -4,14 +4,28 @@ import {
   LayoutDashboard,
   BookOpenCheck,
   BookCheck,
+  VideoIcon,
+  Diamond,
+  Podcast,
   User,
+  RectangleEllipsis,
+  RadioReceiver,
+  RadioTower,
+  Book,
 } from "lucide-react";
 
 export const Icons = {
   Check,
   LayoutDashboard,
   BookOpenCheck,
+  VideoIcon,
+  Podcast,
+  RectangleEllipsis,
+  RadioReceiver,
+  RadioTower,
+  Book,
   BookCheck,
+  Diamond,
   User,
   Google: (props: LucideProps) => (
     <svg {...props} className="w-5 h-5" viewBox="0 0 24 24">

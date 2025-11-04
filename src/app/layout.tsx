@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono, Poppins } from "next/font/google";
 import "./globals.css";
 import { TRPCReactProvider } from "@/trpc/react";
+import { ThemeProvider } from "next-themes";
 
 const heading = Poppins({
   variable: "--font-heading",
@@ -26,7 +27,14 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${heading.variable} ${paragraph.variable} antialiased`}>
-        <TRPCReactProvider>{children}</TRPCReactProvider>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          <TRPCReactProvider>{children}</TRPCReactProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

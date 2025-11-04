@@ -51,7 +51,7 @@ export const organisation = pgTable("organisation", {
   //status
   isPublic: boolean("is_public").default(false).notNull(),
   isSetupCompleted: boolean("is_setup_completed").default(false).notNull(),
-  status: userStatusEnum("status").default("active").notNull(),
+  status: userStatusEnum("status").default("inactive").notNull(),
 
   //area focused
   organisationType: organisationTypeEnum("organisation_type")

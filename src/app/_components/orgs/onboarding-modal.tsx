@@ -253,16 +253,20 @@ const OnboardingModal: FC<OnboardingModalProps> = ({
             <p className="px-1 text-xs text-foreground/70 h-4">
               {`/org/${watch("slug") || "your-slug"}`}
             </p>
-            {slugData.data && !slugData.data.available && watch("slug") && (
-              <p className="px-1 text-xs text-destructive h-4">
-                This slug is already taken
-              </p>
-            )}
-            {slugData.data && slugData.data.available && watch("slug") && (
-              <p className="px-1 text-xs text-primary h-4">
-                This slug is available
-              </p>
-            )}
+            {slugData.data &&
+              slugData.data.available.length > 0 &&
+              watch("slug") && (
+                <p className="px-1 text-xs text-destructive h-4">
+                  This slug is already taken
+                </p>
+              )}
+            {slugData.data &&
+              slugData.data.available.length <= 0 &&
+              watch("slug") && (
+                <p className="px-1 text-xs text-primary h-4">
+                  This slug is available
+                </p>
+              )}
             {errors?.slug ? (
               <p className="px-1 text-xs text-destructive h-4">
                 {errors.slug.message}

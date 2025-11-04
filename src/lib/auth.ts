@@ -142,10 +142,10 @@ export const auth = betterAuth({
           return ctx.redirect("/super-admin/dashboard");
         }
 
-        if (user.userRole === "org") {
-          console.log("org redirection");
-          return ctx.redirect("/org/onboarding");
-        }
+        // if (user.userRole === "org") {
+        //   console.log("org redirection");
+        //   return ctx.redirect("/org/onboarding");
+        // }
       } else {
         const user = await getCurrentUser();
         if (user?.user.userRole === "admin") {

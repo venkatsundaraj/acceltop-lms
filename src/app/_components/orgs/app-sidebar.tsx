@@ -13,12 +13,15 @@ import { FC } from "react";
 import { orgNavbarItems } from "@/config/marketing";
 import Link from "next/link";
 import { Icons } from "../miscellaneous/lucide-react";
+import { getCurrentUser } from "@/lib/session";
 
 interface AppSidebarProps {
   user: OrgSchema;
 }
 
-export const AppSidebar: FC<AppSidebarProps> = function ({ user }) {
+export const AppSidebar = async function ({ user }: AppSidebarProps) {
+  const session = await getCurrentUser();
+
   return (
     <Sidebar className="bg-background py-5">
       <SidebarHeader className="bg-transparent">
@@ -27,16 +30,18 @@ export const AppSidebar: FC<AppSidebarProps> = function ({ user }) {
         </h4>
       </SidebarHeader>
       <SidebarContent className="bg-background px-3 py-8 flex flex-col items-start justify-start gap-6">
-        <SidebarMenu>
-          <SidebarMenuItem>
-            <SidebarMenuButton asChild>
-              <Link href={``}>
-                <Icons.LayoutDashboard />
-                <span>Dashboard</span>
-              </Link>
-            </SidebarMenuButton>
-          </SidebarMenuItem>
-        </SidebarMenu>
+        {session?.user ? (
+          <SidebarMenu>
+            <SidebarMenuItem>
+              <SidebarMenuButton asChild>
+                <Link href={`/org/${user.slug}/app`}>
+                  <Icons.LayoutDashboard />
+                  <span>Dashboard</span>
+                </Link>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+          </SidebarMenu>
+        ) : null}
         <SidebarMenu>
           <h5 className="text-foreground/50 mb-4 uppercase font-bold text-subtitle-heading text-left leading-tight tracking-normal font-paragraph  max-w-2xl">
             Study Module
@@ -55,20 +60,22 @@ export const AppSidebar: FC<AppSidebarProps> = function ({ user }) {
             );
           })}
         </SidebarMenu>
-        <SidebarMenu>
-          <h5 className="text-foreground/50 mb-4 uppercase font-bold text-subtitle-heading text-left leading-tight tracking-normal font-paragraph  max-w-2xl">
-            My Account
-          </h5>
+        {session?.user ? (
+          <SidebarMenu>
+            <h5 className="text-foreground/50 mb-4 uppercase font-bold text-subtitle-heading text-left leading-tight tracking-normal font-paragraph  max-w-2xl">
+              My Account
+            </h5>
 
-          <SidebarMenuItem>
-            <SidebarMenuButton asChild>
-              <Link href={``}>
-                <Icons.User />
-                <span>Me</span>
-              </Link>
-            </SidebarMenuButton>
-          </SidebarMenuItem>
-        </SidebarMenu>
+            <SidebarMenuItem>
+              <SidebarMenuButton asChild>
+                <Link href={``}>
+                  <Icons.User />
+                  <span>Me</span>
+                </Link>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+          </SidebarMenu>
+        ) : null}
       </SidebarContent>
       <SidebarFooter />
     </Sidebar>

@@ -8,6 +8,7 @@ import * as schema from "@/server/db/schema";
 import { db } from "@/server/db";
 import { eq } from "drizzle-orm";
 import { handleTRPCCall } from "@/lib/handle-trpc-error";
+import { ModeToggle } from "@/app/_components/miscellaneous/toggle-theme";
 
 interface HeaderProps {}
 
@@ -36,6 +37,9 @@ const Header = async ({}: HeaderProps) => {
         </Link>
         <nav className="flex items-center justify-center gap-3">
           <ul className="flex items-center justify-center gap-6">
+            <li className="text-primary text-subtitle-heading leading-normal tracking-normal font-paragraph font-normal ">
+              {/* <ModeToggle />s */}
+            </li>
             <li className="text-primary text-subtitle-heading leading-normal tracking-normal font-paragraph font-normal ">
               <Link href={"/pricing"}>Pricing</Link>
             </li>

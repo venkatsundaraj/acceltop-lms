@@ -29,6 +29,10 @@ const page = async ({}) => {
     redirect("/org/login");
   }
 
+  if (user.user.userStatus !== "active") {
+    redirect("/org/onboarding");
+  }
+
   return (
     <section className="w-full bg-background h-screen max-h-screen flex items-center justify-center">
       <h1 className="text-primary text-7xl leading-normal tracking-normal font-heading font-semibold">

@@ -15,7 +15,9 @@ const page = async ({}: pageProps) => {
   if (!session || !session.user || !session.user.email || !session.user.name) {
     return notFound();
   }
+
   const result = await handleTRPCCall(() => api.org.getOrg());
+  // console.log("result", result);
 
   if (result.error) {
     if (result.error.needsRedirect) {
@@ -23,17 +25,19 @@ const page = async ({}: pageProps) => {
     }
   }
 
-  if (result.data?.id) {
+  console.log(result.data?.id, session.user.userStatus);
+
+  if (result.data?.id && result.data?.status === "active") {
     redirect(`/org/${result.data.slug}/app`);
   }
   return (
     <HydrateClient>
       <section className="flex items-center justify-center bg-primary w-full py-24 min-h-screen relative">
-        <div className="container flex flex-col items-center justify-center py-12">
-          <header className="w-full flex items-center justify-end mt-12">
+        <div className="container flex flex-col items-center justify-start py-12">
+          <header className="w-full flex items-center justify-end ">
             <OrgSignoutButton className="bg-background text-primary hover:bg-background/70 hover:text-primary" />
           </header>
-          {!result.data?.id ? (
+          {!result.data?.id || result.data?.status === "pending" ? (
             <OnboardingModal
               email={session.user.email}
               name={session.user.name}

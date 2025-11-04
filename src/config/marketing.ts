@@ -114,4 +114,34 @@ export const orgNavbarItems: {
     url: "#",
     icon: "BookCheck",
   },
+  {
+    title: "Videos",
+    url: "#",
+    icon: "VideoIcon",
+  },
+  {
+    title: "Flashcards",
+    url: "#",
+    icon: "Diamond",
+  },
+  {
+    title: "MCQ",
+    url: "#",
+    icon: "RectangleEllipsis",
+  },
+  {
+    title: "E-Book",
+    url: "#",
+    icon: "Book",
+  },
+  {
+    title: "Podcast",
+    url: "#",
+    icon: "Podcast",
+  },
+  {
+    title: "Live",
+    url: "#",
+    icon: "RadioTower",
+  },
 ];

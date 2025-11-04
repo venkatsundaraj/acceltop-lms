@@ -14,8 +14,13 @@ import { getCurrentUser } from "@/lib/session";
 export const orgRouter = createTRPCRouter({
   getOrg: publicProcedure.query(async ({ ctx }) => {
     const session = await getCurrentUser();
-    if (!session || !session.user || !session.user.id) {
-      return;
+    if (
+      !session ||
+      !session.user ||
+      !session.user.id ||
+      session.user.userRole !== "org"
+    ) {
+      return null;
     }
 
     if (session.user.organizationId) {
@@ -29,6 +34,27 @@ export const orgRouter = createTRPCRouter({
 
     return null;
   }),
+  getOrgBySlug: publicProcedure
+    .input(z.object({ orgSlug: z.string().trim().min(1) }))
+    .query(async ({ ctx, input }) => {
+      const org = await ctx.db
+        .select()
+        .from(schema.organisation)
+        .where(eq(schema.organisation.slug, input.orgSlug));
+
+      if (!org.length) {
+        return {
+          uniqueOrg: null,
+        };
+      }
+
+      const [uniqueOrg] = org;
+
+      return {
+        uniqueOrg,
+      };
+    }),
+
   findOrgById: orgProcedure.input(z.string()).query(async ({ ctx, input }) => {
     const org = await ctx.db
       .select()
@@ -48,6 +74,7 @@ export const orgRouter = createTRPCRouter({
         available: ifSlugExists,
       };
     }),
+
   createOrganisation: publicProcedure
     .input(orgValidation)
     .mutation(async ({ ctx, input }) => {
