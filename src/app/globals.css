@@ -171,9 +171,6 @@
   --font-pixelify: var(--pixelify);
   --font-caafont: var(--caafont);
 
-  --animate-in: animate-in 0.4s ease-out;
-  --animate-out: animate-out 0.3s ease-in;
-
   --animate-marquee: marquee var(--duration) infinite linear;
   --animate-marquee-vertical: marquee-vertical var(--duration) linear infinite;
 

@@ -1,27 +1,42 @@
-import { authClient } from "@/lib/auth-client";
+import { auth } from "@/lib/auth";
 import { getCurrentUser } from "@/lib/session";
-import { db } from "@/server/db";
-import { FC } from "react";
-import { user as userTable } from "@/server/db/schema";
-import { eq } from "drizzle-orm";
+import { api } from "@/trpc/server";
+import { headers } from "next/headers";
 import { notFound } from "next/navigation";
 
-interface pageProps {}
+interface pageProps {
+  params: {
+    orgname: string;
+  };
+}
 
-const page = async ({}: pageProps) => {
+const page = async ({ params }: pageProps) => {
+  const { orgname } = await params;
   const session = await getCurrentUser();
-  //get the org detail, if they enter here restrict them as an organisation user
+  const orgUser = await api.orgUser.getOrgUser();
 
   if (!session || !session.user.id) {
     notFound();
   }
+  const { uniqueOrg } = await api.org.getOrgBySlug({ orgSlug: orgname });
 
-  await db
-    .update(userTable)
-    .set({ userRole: "org_user" })
-    .where(eq(userTable.id, session?.user.id));
+  if (!uniqueOrg) {
+    notFound();
+  }
 
-  return <div>page</div>;
+  const user = await api.org.getOrg();
+
+  if (user?.status === "active") {
+    await auth.api.signOut({
+      headers: await headers(),
+    });
+    notFound();
+  }
+  if (!orgUser?.organisationId) {
+    const user = await api.orgUser.createOrgUser({ orgId: uniqueOrg.id });
+  }
+
+  return <main className="w-full">{<h1>hello world</h1>}</main>;
 };
 
 export default page;

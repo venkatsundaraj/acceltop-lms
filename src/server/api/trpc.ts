@@ -9,7 +9,7 @@
 import { initTRPC, TRPCError } from "@trpc/server";
 import superjson from "superjson";
 import { ZodError } from "zod";
-import * as schema from "@/server/db/schema";
+import * as schema from "@/server/db/index-schema";
 import { db } from "@/server/db";
 import { getCurrentUser } from "@/lib/session";
 import { eq } from "drizzle-orm";
@@ -172,6 +172,20 @@ const isOrg = t.middleware(async (opts) => {
   });
 });
 
+const sessionProcedure = t.middleware(async (opts) => {
+  const session = await getCurrentUser();
+
+  if (!session || !session.user || !session.user.id) {
+    throw new TRPCError({ code: "UNAUTHORIZED" });
+  }
+
+  return opts.next({
+    ctx: {
+      ...session.user,
+    },
+  });
+});
+
 /**
  * Public (unauthenticated) procedure
  *
@@ -183,3 +197,4 @@ export const publicProcedure = t.procedure.use(timingMiddleware);
 
 export const adminProcedure = t.procedure.use(isAdmin);
 export const orgProcedure = t.procedure.use(isOrg);
+export const privateProcedure = t.procedure.use(sessionProcedure);

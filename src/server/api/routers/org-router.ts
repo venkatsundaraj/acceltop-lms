@@ -4,7 +4,7 @@ import {
   orgProcedure,
   publicProcedure,
 } from "@/server/api/trpc";
-import * as schema from "@/server/db/schema";
+import * as schema from "@/server/db/index-schema";
 import { TRPCError } from "@trpc/server";
 import { eq } from "drizzle-orm";
 import z from "zod";

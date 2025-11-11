@@ -2,10 +2,10 @@
 import { FC } from "react";
 import { Button, buttonVariants } from "../ui/button";
 import { authClient } from "@/lib/auth-client";
-import { useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
 
-interface OrgSignoutButtonProps {
+interface OrgUserLogoutProps {
   variant?:
     | "default"
     | "destructive"
@@ -19,12 +19,13 @@ interface OrgSignoutButtonProps {
   size?: "default" | "sm" | "lg" | "xl" | "icon" | null | undefined;
 }
 
-const OrgSignoutButton: FC<OrgSignoutButtonProps> = ({
+const OrgUserLogout: FC<OrgUserLogoutProps> = ({
   variant,
   className,
   size,
 }) => {
   const router = useRouter();
+  const { orgname } = useParams<{ orgname: string }>();
   return (
     <Button
       className={cn(
@@ -36,15 +37,15 @@ const OrgSignoutButton: FC<OrgSignoutButtonProps> = ({
         await authClient.signOut({
           fetchOptions: {
             onSuccess: () => {
-              router.push("/org/login"); // Redirect to the login page
+              router.push(`/org/${orgname}`); // Redirect to the login page
             },
           },
         });
       }}
     >
-      Org SignOut
+      Student SignOut
     </Button>
   );
 };
 
-export default OrgSignoutButton;
+export default OrgUserLogout;

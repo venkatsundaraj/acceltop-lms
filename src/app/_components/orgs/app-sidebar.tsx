@@ -8,33 +8,38 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/app/_components/ui/sidebar";
-import { OrgSchema, UserSchema } from "@/server/db/schema";
+import { UserSchema } from "@/server/db/schema";
+import { OrgSchema } from "@/server/db/organisation";
 import { FC } from "react";
 import { orgNavbarItems } from "@/config/marketing";
 import Link from "next/link";
 import { Icons } from "../miscellaneous/lucide-react";
 import { getCurrentUser } from "@/lib/session";
+import { api } from "@/trpc/server";
 
 interface AppSidebarProps {
-  user: OrgSchema;
+  // user: OrgSchema;
 }
 
-export const AppSidebar = async function ({ user }: AppSidebarProps) {
+export const AppSidebar = async function ({}: AppSidebarProps) {
   const session = await getCurrentUser();
+  const org = await api.org.getOrg();
 
   return (
     <Sidebar className="bg-background py-5">
-      <SidebarHeader className="bg-transparent">
-        <h4 className="text-primary uppercase font-bold text-paragraph-heading text-center leading-tight tracking-normal font-paragraph  max-w-2xl">
-          {user.name ?? user.name}
-        </h4>
-      </SidebarHeader>
+      {org?.name ? (
+        <SidebarHeader className="bg-transparent">
+          <h4 className="text-primary uppercase font-bold text-paragraph-heading text-center leading-tight tracking-normal font-paragraph  max-w-2xl">
+            {org.name}
+          </h4>
+        </SidebarHeader>
+      ) : null}
       <SidebarContent className="bg-background px-3 py-8 flex flex-col items-start justify-start gap-6">
-        {session?.user ? (
+        {org?.slug ? (
           <SidebarMenu>
             <SidebarMenuItem>
               <SidebarMenuButton asChild>
-                <Link href={`/org/${user.slug}/app`}>
+                <Link href={`/org/${org.slug}/app`}>
                   <Icons.LayoutDashboard />
                   <span>Dashboard</span>
                 </Link>

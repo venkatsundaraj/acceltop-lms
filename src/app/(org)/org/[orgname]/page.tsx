@@ -16,29 +16,7 @@ interface pageProps {
 }
 
 const page = async ({ children, params }: pageProps) => {
-  const { orgname } = await params;
-  const session = await getCurrentUser();
-  const { uniqueOrg } = await api.org.getOrgBySlug({ orgSlug: orgname });
-  if (!uniqueOrg) notFound();
-
-  return (
-    <SidebarProvider>
-      <AppSidebar user={uniqueOrg} />
-      <main className="w-full">
-        <nav className="w-full ">
-          <div className="container flex items-center justify-between py-4">
-            <SidebarTrigger />
-            {session?.user && session.user.userRole === "org" ? (
-              <OrgSignoutButton />
-            ) : (
-              <OrgUserLogin />
-            )}
-          </div>
-        </nav>
-        {children}
-      </main>
-    </SidebarProvider>
-  );
+  return <h1>Hello world</h1>;
 };
 
 export default page;

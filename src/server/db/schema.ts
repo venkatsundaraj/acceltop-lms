@@ -9,83 +9,11 @@ import {
   json,
   pgEnum,
 } from "drizzle-orm/pg-core";
-
+import { userRoleEnum, userStatusEnum } from "./enums";
+import { organisation } from "./organisation";
 export const createTable = pgTableCreator((name) => `acceltop_${name}`);
 
-export const userRoleEnum = pgEnum("user_role", ["admin", "org_user", "org"]);
-export const userStatusEnum = pgEnum("user_status", [
-  "active",
-  "inactive",
-  "pending",
-]);
-
-export const organisationTypeEnum = pgEnum("organisation_type", [
-  "creator",
-  "institute",
-  "publisher",
-  "tutor",
-]);
-export const examTypeEnum = pgEnum("examType", [
-  "jee",
-  "upsc",
-  "neet",
-  "cat",
-  "banking",
-  "ssc",
-  "gate",
-  "other",
-]);
-
-export const organisation = pgTable("organisation", {
-  id: text("id").primaryKey(),
-  name: text("name").notNull(),
-  slug: text("slug").notNull().unique(),
-  website: text("website"),
-  description: text("description"),
-  logo: text("logo"),
-  bannerImage: text("banner_image"),
-  contactEmail: text("contact_email"),
-  phone: text("phone"),
-  address: text("address"),
-
-  //status
-  isPublic: boolean("is_public").default(false).notNull(),
-  isSetupCompleted: boolean("is_setup_completed").default(false).notNull(),
-  status: userStatusEnum("status").default("inactive").notNull(),
-
-  //area focused
-  organisationType: organisationTypeEnum("organisation_type")
-    .default("creator")
-    .notNull(),
-  focusExams: json("focus_exams").$type<string[]>(),
-
-  //timestamps
-  createdAt: timestamp("created_at")
-    .$defaultFn(() => new Date())
-    .notNull(),
-  updatedAt: timestamp("updated_at")
-    .$defaultFn(() => new Date())
-    .notNull(),
-  settings: json("settings").$type<{
-    allowStudentSelfSignup?: boolean;
-    requireStudentApproval?: boolean;
-    customTheme?: {
-      primaryColor?: string;
-      secondaryColor?: string;
-      logo?: string;
-    };
-    features?: string[];
-    onBoardingStep?: number;
-    subscriptionPlan?: "free" | "premium" | "basic";
-    billing?: {
-      planStartDate?: string;
-      planEndDate?: string;
-      autoRenew?: boolean;
-    };
-  }>(),
-});
-
-export const user = pgTable("user", {
+export const user = createTable("user", {
   id: text("id").primaryKey(),
   name: text("name").notNull(),
   email: text("email").notNull().unique(),
@@ -138,7 +66,7 @@ export const user = pgTable("user", {
 
 //default
 
-export const session = pgTable("session", {
+export const session = createTable("session", {
   id: text("id").primaryKey(),
   expiresAt: timestamp("expires_at").notNull(),
   token: text("token").notNull().unique(),
@@ -151,7 +79,7 @@ export const session = pgTable("session", {
     .references(() => user.id, { onDelete: "cascade" }),
 });
 
-export const account = pgTable("account", {
+export const account = createTable("account", {
   id: text("id").primaryKey(),
   accountId: text("account_id").notNull(),
   providerId: text("provider_id").notNull(),
@@ -169,7 +97,7 @@ export const account = pgTable("account", {
   updatedAt: timestamp("updated_at").notNull(),
 });
 
-export const verification = pgTable("verification", {
+export const verification = createTable("verification", {
   id: text("id").primaryKey(),
   identifier: text("identifier").notNull(),
   value: text("value").notNull(),
@@ -183,4 +111,3 @@ export const verification = pgTable("verification", {
 });
 
 export type UserSchema = typeof user.$inferSelect;
-export type OrgSchema = typeof organisation.$inferSelect;
