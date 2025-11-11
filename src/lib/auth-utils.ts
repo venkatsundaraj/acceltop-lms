@@ -1,7 +1,7 @@
 import { env } from "@/env";
 import { db } from "@/server/db";
 import * as schema from "@/server/db/schema";
-import { eq } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 import { nanoid } from "nanoid";
 
 let existedRoute: string;
@@ -39,6 +39,18 @@ export const determineUserroleAndOrg = async function (
 
   if (adminEmails.includes(email)) {
     return { role: "admin", organizationId: null };
+  }
+
+  const checkIfOrgUser = await db
+    .select()
+    .from(schema.user)
+    .where(
+      and(eq(schema.user.email, email), eq(schema.user.userRole, "org_user"))
+    );
+  console.log(checkIfOrgUser);
+
+  if (checkIfOrgUser.length) {
+    return { role: "org_user", organizationId: null };
   }
 
   return { role: "org", organizationId: null };

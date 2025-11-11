@@ -1,9 +1,11 @@
 import SignoutButton from "@/app/_components/admin/signout-button";
 import OnboardingModal from "@/app/_components/orgs/onboarding-modal";
 import OrgSignoutButton from "@/app/_components/orgs/org-sign-out-button";
+import { auth } from "@/lib/auth";
 import { handleTRPCCall } from "@/lib/handle-trpc-error";
 import { getCurrentUser } from "@/lib/session";
 import { api, HydrateClient } from "@/trpc/server";
+import { headers } from "next/headers";
 import { notFound, redirect } from "next/navigation";
 import { FC } from "react";
 
@@ -12,7 +14,16 @@ interface pageProps {}
 const page = async ({}: pageProps) => {
   const session = await getCurrentUser();
 
-  if (!session || !session.user || !session.user.email || !session.user.name) {
+  if (
+    !session ||
+    !session.user ||
+    !session.user.email ||
+    !session.user.name ||
+    session.user.userRole !== "org"
+  ) {
+    await auth.api.signOut({
+      headers: await headers(),
+    });
     return notFound();
   }
 
@@ -24,8 +35,6 @@ const page = async ({}: pageProps) => {
       redirect(result.error.needsRedirect);
     }
   }
-
-  console.log(result.data?.id, session.user.userStatus);
 
   if (result.data?.id && result.data?.status === "active") {
     redirect(`/org/${result.data.slug}/app`);

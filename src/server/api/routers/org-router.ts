@@ -34,6 +34,25 @@ export const orgRouter = createTRPCRouter({
 
     return null;
   }),
+  getOrgFromEmail: publicProcedure
+    .input(z.object({ email: z.string() }))
+    .query(async ({ ctx, input }) => {
+      const session = await getCurrentUser();
+      if (!session || !session.user || !session.user.id) {
+        return null;
+      }
+
+      if (session.user.organizationId) {
+        const [org] = await ctx.db
+          .select()
+          .from(schema.user)
+          .where(eq(schema.user.email, input.email));
+
+        return org ?? null;
+      }
+
+      return null;
+    }),
   getOrgBySlug: publicProcedure
     .input(z.object({ orgSlug: z.string().trim().min(1) }))
     .query(async ({ ctx, input }) => {
