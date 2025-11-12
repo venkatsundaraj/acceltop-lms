@@ -2,6 +2,7 @@ import { relations } from "drizzle-orm";
 import { account, session, user } from "./schema";
 import { organisation } from "./organisation";
 import { studentSubscription } from "./organisation-user";
+import { category, qbank } from "./module-schemas/category";
 
 export const userRelations = relations(user, ({ one }) => ({
   organisation: one(organisation, {
@@ -14,6 +15,8 @@ export const organisationRelations = relations(organisation, ({ many }) => ({
   user: many(user),
   session: many(session),
   account: many(account),
+  category: many(category),
+  qbank: many(qbank),
 }));
 
 export const studentSubscriptionRelations = relations(
