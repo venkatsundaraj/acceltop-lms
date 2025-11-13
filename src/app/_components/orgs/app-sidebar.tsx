@@ -34,21 +34,31 @@ export const AppSidebar = async function ({}: AppSidebarProps) {
           </h4>
         </SidebarHeader>
       ) : null}
-      <SidebarContent className="bg-background px-3 py-8 flex flex-col items-start justify-start gap-6">
+      <SidebarContent className="bg-background px-3 py-8 flex flex-col items-start justify-start">
         {org?.slug ? (
-          <SidebarMenu>
-            <SidebarMenuItem>
-              <SidebarMenuButton asChild>
-                <Link href={`/org/${org.slug}/app`}>
-                  <Icons.LayoutDashboard />
-                  <span>Dashboard</span>
-                </Link>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
-          </SidebarMenu>
+          <>
+            <SidebarMenu>
+              <SidebarMenuItem>
+                <SidebarMenuButton asChild>
+                  <Link href={`/org/${org.slug}/app`}>
+                    <Icons.LayoutDashboard />
+                    <span>Dashboard</span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+              <SidebarMenuItem>
+                <SidebarMenuButton asChild>
+                  <Link href={`/org/${org.slug}/app/content/category`}>
+                    <Icons.Grid2X2 />
+                    <span>Content</span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+            </SidebarMenu>
+          </>
         ) : null}
         <SidebarMenu>
-          <h5 className="text-foreground/50 mb-4 uppercase font-bold text-subtitle-heading text-left leading-tight tracking-normal font-paragraph  max-w-2xl">
+          <h5 className="text-foreground/50 my-4 uppercase font-bold text-subtitle-heading text-left leading-tight tracking-normal font-paragraph  max-w-2xl">
             Study Module
           </h5>
           {orgNavbarItems.map((item, i) => {

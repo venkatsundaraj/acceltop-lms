@@ -13,8 +13,6 @@ export const userRelations = relations(user, ({ one }) => ({
 
 export const organisationRelations = relations(organisation, ({ many }) => ({
   user: many(user),
-  session: many(session),
-  account: many(account),
   category: many(category),
   qbank: many(qbank),
 }));

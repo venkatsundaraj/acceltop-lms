@@ -10,6 +10,7 @@ import {
   User,
   RectangleEllipsis,
   RadioReceiver,
+  Grid2X2,
   RadioTower,
   Book,
 } from "lucide-react";
@@ -18,6 +19,7 @@ export const Icons = {
   Check,
   LayoutDashboard,
   BookOpenCheck,
+  Grid2X2,
   VideoIcon,
   Podcast,
   RectangleEllipsis,
