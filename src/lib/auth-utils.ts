@@ -47,7 +47,7 @@ export const determineUserroleAndOrg = async function (
     .where(
       and(eq(schema.user.email, email), eq(schema.user.userRole, "org_user"))
     );
-  console.log(checkIfOrgUser);
+  console.log(checkIfOrgUser, "orguser");
 
   if (checkIfOrgUser.length) {
     return { role: "org_user", organizationId: null };

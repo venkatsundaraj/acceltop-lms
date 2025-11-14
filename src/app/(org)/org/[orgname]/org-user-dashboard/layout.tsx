@@ -16,6 +16,8 @@ const layout = async ({ params, children }: layoutProps) => {
   const session = await getCurrentUser();
   const orgUser = await api.orgUser.getOrgUser();
 
+  console.log(orgUser?.organisationId, "org--user");
+
   if (!session || !session.user.id) {
     notFound();
   }

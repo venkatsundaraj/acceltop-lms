@@ -36,7 +36,7 @@ export const user = createTable("user", {
   signupSource: text("signup_source"),
 
   //enum and roles
-  userRole: userRoleEnum("role").default("org_user").notNull(),
+  userRole: userRoleEnum("role").default("none").notNull(),
   userStatus: userStatusEnum("status").default("pending").notNull(),
 
   //relation

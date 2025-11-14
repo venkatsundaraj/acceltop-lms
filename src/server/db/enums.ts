@@ -5,7 +5,12 @@ export const userStatusEnum = pgEnum("user_status", [
   "inactive",
   "pending",
 ]);
-export const userRoleEnum = pgEnum("user_role", ["admin", "org_user", "org"]);
+export const userRoleEnum = pgEnum("user_role", [
+  "admin",
+  "org_user",
+  "org",
+  "none",
+]);
 
 export const examTypeEnum = pgEnum("examType", [
   "jee",

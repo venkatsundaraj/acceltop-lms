@@ -67,7 +67,7 @@ export const studentSubscription = createTable(
     }>(),
   },
   (table) => ({
-    uniqueStudentOrg: unique().on(table.studentId, table.organisationId),
+    uniqueStudentOrg: unique().on(table.id, table.organisationId),
   })
 );
 
