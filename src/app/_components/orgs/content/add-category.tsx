@@ -1,5 +1,5 @@
 "use client";
-import { FC } from "react";
+import { FC, useState } from "react";
 import { Input } from "@/app/_components/ui/input";
 import { useForm } from "react-hook-form";
 import {
@@ -7,11 +7,18 @@ import {
   CategoryValidation,
 } from "@/lib/validation/category-schema";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Button } from "../../ui/button";
+import { Button } from "@/app/_components/ui/button";
+import { api } from "@/trpc/react";
+import { Toaster } from "@/app/_components/ui/sonner";
+import { toast } from "sonner";
+import { slugify } from "@/lib/utils";
+import Link from "next/link";
 
 interface AddCategoryProps {}
 
 const AddCategory: FC<AddCategoryProps> = ({}) => {
+  const [value, setValue] = useState<string[]>(["hello world 1"]);
+
   const {
     register,
     formState: { errors, isLoading, isSubmitting },
@@ -21,29 +28,90 @@ const AddCategory: FC<AddCategoryProps> = ({}) => {
     resolver: zodResolver(categorySchema),
   });
 
+  const apiClient = api.useUtils();
+  const { data: categoryList } =
+    api.contentManagement.getAllCategories.useQuery();
+
+  const { mutateAsync: uploadCategory, isPending } =
+    api.contentManagement.addCategory.useMutation({
+      onMutate: async (data) => {
+        await apiClient.contentManagement.getAllCategories.cancel();
+        const prev =
+          await apiClient.contentManagement.getAllCategories.getData();
+
+        apiClient.contentManagement.getAllCategories.setData(
+          undefined,
+          (old) => {
+            if (!old) return old;
+
+            return [
+              ...old,
+              {
+                id: "temp-id",
+                organisationId: "temp-org-id",
+                name: data.text,
+                slug: slugify(data.text),
+                createdAt: new Date(),
+                updatedAt: new Date(),
+                description: "",
+                icon: "",
+                order: 0,
+                isActive: true,
+              },
+            ];
+          }
+        );
+
+        return { prev };
+      },
+      onSuccess: (data) => {
+        toast("The category has been added");
+      },
+      onError: (err) => {
+        toast("Something went wrong");
+      },
+      onSettled: () => {
+        apiClient.contentManagement.getAllCategories.invalidate();
+      },
+    });
+
   //have to update the server actions
-  const submitHandler = function (data: CategoryValidation) {
-    console.log(data);
+  const submitHandler = async function (data: CategoryValidation) {
+    await uploadCategory({ text: data.title });
     reset();
   };
   return (
-    <form
-      onSubmit={handleSubmit(submitHandler)}
-      className="flex items-center justify-center w-full"
-    >
-      <div className="flex items-center justify-center gap-2">
-        <Input
-          autoCapitalize="none"
-          autoComplete="none"
-          placeholder="Category"
-          id="website"
-          disabled={isSubmitting}
-          className="rounded-sm border-foreground/60 min-w-[325px]"
-          {...register("title")}
-        />
-        <Button type="submit">Add</Button>
-      </div>
-    </form>
+    <div className="container flex flex-col items-center justify-start gap-12">
+      <form
+        onSubmit={handleSubmit(submitHandler)}
+        className="flex items-center justify-center w-full"
+      >
+        <div className="flex items-center justify-center gap-2">
+          <Input
+            autoCapitalize="none"
+            autoComplete="none"
+            placeholder="Category"
+            id="website"
+            disabled={isPending}
+            className="rounded-sm border-foreground/60 min-w-[325px]"
+            {...register("title")}
+          />
+          <Button disabled={isPending} type="submit">
+            Add
+          </Button>
+        </div>
+      </form>
+      <ul className="w-full grid grid-cols-1 md:grid-cols-3 items-center justify-center">
+        {categoryList?.map((item, i) => (
+          <li
+            key={item.id}
+            className="border-2 border-accent text-primary w-full flex items-center justify-center text-tertiary-heading font-normal leading-normal tracking-tight py-2 rounded-md "
+          >
+            {/* <Link href={}>{item.name}</Link> */}
+          </li>
+        ))}
+      </ul>
+    </div>
   );
 };
 
