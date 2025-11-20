@@ -43,9 +43,11 @@ export const subCategory = createTable(
     slug: text("slug").notNull(),
     description: text("description"),
 
-    categoryId: text("category_id").references(() => category.id, {
-      onDelete: "cascade",
-    }),
+    categoryId: text("category_id")
+      .notNull()
+      .references(() => category.id, {
+        onDelete: "cascade",
+      }),
 
     order: integer("order").default(0),
     isActive: boolean("is_active").default(true),

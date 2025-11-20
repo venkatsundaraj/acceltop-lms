@@ -1,6 +1,7 @@
 import OrgUserLogin from "@/app/_components/org-user/org-user-login";
 import OrgUserLogout from "@/app/_components/org-user/org-user-logout";
 import { AppSidebar } from "@/app/_components/orgs/app-sidebar";
+import DynamicAuthBtn from "@/app/_components/orgs/dynamic-auth-btn";
 import OrgSignoutButton from "@/app/_components/orgs/org-sign-out-button";
 import DashboardProvider from "@/app/_components/providers/org-providers/dashboard-provider";
 import { SidebarProvider, SidebarTrigger } from "@/app/_components/ui/sidebar";
@@ -21,11 +22,6 @@ const layout = async ({ children, params }: layoutProps) => {
   const { orgname } = await params;
   const { uniqueOrg } = await api.org.getOrgBySlug({ orgSlug: orgname });
   const session = await getCurrentUser();
-  const orgUser = await api.orgUser.getOrgUser();
-  console.log(uniqueOrg);
-
-  const data = await db.select({ data: user.id }).from(user);
-  console.log("data", data);
 
   if (
     uniqueOrg &&
@@ -34,29 +30,21 @@ const layout = async ({ children, params }: layoutProps) => {
   ) {
     redirect("/org/onboarding");
   }
-  if (uniqueOrg?.slug !== orgname) {
+  console.log(uniqueOrg?.slug, orgname);
+  if (uniqueOrg?.slug.trim() !== orgname.trim()) {
+    console.log("server", true);
     notFound();
   }
 
   return (
-    <DashboardProvider
-    // initialConfig={{ user: session?.user, uniqueOrg }}
-    >
+    <DashboardProvider>
       <SidebarProvider>
         <AppSidebar />
         <main className="w-full">
           <nav className="w-full ">
             <div className="container flex items-center justify-between py-4">
               <SidebarTrigger />
-              {session &&
-              session.user.userRole === "org" &&
-              uniqueOrg?.slug === orgname ? (
-                <OrgSignoutButton />
-              ) : orgUser && session?.user.userRole === "org_user" ? (
-                <OrgUserLogout />
-              ) : (
-                <OrgUserLogin />
-              )}
+              <DynamicAuthBtn />
             </div>
           </nav>
           {children}

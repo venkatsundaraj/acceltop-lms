@@ -11,6 +11,7 @@ import {
   RectangleEllipsis,
   RadioReceiver,
   Grid2X2,
+  Loader2,
   RadioTower,
   Book,
 } from "lucide-react";
@@ -20,6 +21,7 @@ export const Icons = {
   LayoutDashboard,
   BookOpenCheck,
   Grid2X2,
+  Loader2,
   VideoIcon,
   Podcast,
   RectangleEllipsis,

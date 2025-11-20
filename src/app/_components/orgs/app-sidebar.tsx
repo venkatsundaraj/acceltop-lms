@@ -48,7 +48,7 @@ export const AppSidebar = async function ({}: AppSidebarProps) {
               </SidebarMenuItem>
               <SidebarMenuItem>
                 <SidebarMenuButton asChild>
-                  <Link href={`/org/${org.slug}/app/content/category`}>
+                  <Link href={`/org/${org.slug}/content/category`}>
                     <Icons.Grid2X2 />
                     <span>Content</span>
                   </Link>
