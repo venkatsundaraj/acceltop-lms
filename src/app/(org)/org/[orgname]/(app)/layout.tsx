@@ -1,14 +1,19 @@
 import { getCurrentUser } from "@/lib/session";
-import { api } from "@/trpc/server";
 import { notFound } from "next/navigation";
-import { FC } from "react";
+import React, { FC } from "react";
 
 interface layoutProps {
   children: React.ReactNode;
 }
 
 const layout = async ({ children }: layoutProps) => {
-  return <>{children}</>;
+  const session = await getCurrentUser();
+
+  if (!session || session.user.userRole !== "org") {
+    notFound();
+  }
+
+  return <div>{children}</div>;
 };
 
 export default layout;

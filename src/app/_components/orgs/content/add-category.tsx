@@ -25,13 +25,16 @@ const AddCategory: FC<AddCategoryProps> = ({}) => {
     handleSubmit,
   } = useForm<CategoryValidation>({
     resolver: zodResolver(categorySchema),
+    defaultValues: {
+      organisationId: "org-id",
+    },
   });
 
   const { org } = useOrgContext();
 
   const apiClient = api.useUtils();
   const { data: categoryList } =
-    api.contentManagement.getAllCategories.useQuery();
+    api.contentManagement.getAllCategories.useQuery({ organisationId: org.id });
 
   const { mutateAsync: uploadCategory, isPending } =
     api.contentManagement.addCategory.useMutation({
@@ -41,7 +44,7 @@ const AddCategory: FC<AddCategoryProps> = ({}) => {
           await apiClient.contentManagement.getAllCategories.getData();
 
         apiClient.contentManagement.getAllCategories.setData(
-          undefined,
+          { organisationId: org.id },
           (old) => {
             if (!old) return old;
 
@@ -50,8 +53,8 @@ const AddCategory: FC<AddCategoryProps> = ({}) => {
               {
                 id: "temp-id",
                 organisationId: "temp-org-id",
-                name: data.text,
-                slug: slugify(data.text),
+                name: data.title,
+                slug: slugify(data.title),
                 createdAt: new Date(),
                 updatedAt: new Date(),
                 description: "",
@@ -78,7 +81,8 @@ const AddCategory: FC<AddCategoryProps> = ({}) => {
 
   //have to update the server actions
   const submitHandler = async function (data: CategoryValidation) {
-    await uploadCategory({ text: data.title });
+    console.log(data);
+    await uploadCategory({ title: data.title, organisationId: org.id });
     reset();
   };
   return (

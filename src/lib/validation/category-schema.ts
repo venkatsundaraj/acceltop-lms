@@ -8,8 +8,7 @@ export const subCategorySchema = z.object({
 });
 
 export const categorySchema = subCategorySchema.omit({
-  category: true,
-  organisationId: true,
+  categorySlug: true,
 });
 
 export type CategoryValidation = z.infer<typeof categorySchema>;
