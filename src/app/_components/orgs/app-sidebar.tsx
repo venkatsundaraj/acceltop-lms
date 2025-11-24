@@ -16,10 +16,9 @@ import Link from "next/link";
 import { Icons } from "../miscellaneous/lucide-react";
 import { getCurrentUser } from "@/lib/session";
 import { api } from "@/trpc/server";
+import CustomSidebarHeader from "@/app/_components/orgs/custom-sidebar-header";
 
-interface AppSidebarProps {
-  // user: OrgSchema;
-}
+interface AppSidebarProps {}
 
 export const AppSidebar = async function ({}: AppSidebarProps) {
   const session = await getCurrentUser();
@@ -27,13 +26,7 @@ export const AppSidebar = async function ({}: AppSidebarProps) {
 
   return (
     <Sidebar className="bg-background py-5">
-      {org?.name ? (
-        <SidebarHeader className="bg-transparent">
-          <h4 className="text-primary uppercase font-bold text-paragraph-heading text-center leading-tight tracking-normal font-paragraph  max-w-2xl">
-            {org.name}
-          </h4>
-        </SidebarHeader>
-      ) : null}
+      <CustomSidebarHeader />
       <SidebarContent className="bg-background px-3 py-8 flex flex-col items-start justify-start">
         {org?.slug ? (
           <>
@@ -66,7 +59,7 @@ export const AppSidebar = async function ({}: AppSidebarProps) {
             return (
               <SidebarMenuItem key={i}>
                 <SidebarMenuButton asChild>
-                  <Link href={item.url}>
+                  <Link href={`/org/${org?.slug}/${item.url}`}>
                     <Icon />
                     <span>{item.title}</span>
                   </Link>

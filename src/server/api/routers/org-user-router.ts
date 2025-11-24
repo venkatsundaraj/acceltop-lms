@@ -24,14 +24,30 @@ export const orgUserRouter = createTRPCRouter({
     ) {
       return null;
     }
-
     const [orgUser] = await ctx.db
       .select()
       .from(studentSubscription)
       .where(eq(studentSubscription.studentId, session.user.id));
-    console.log("user", orgUser);
     return orgUser ?? null;
   }),
+  getOrgUserFromOrgId: publicProcedure
+    .input(z.object({ orgId: z.string().min(1) }))
+    .query(async ({ ctx, input }) => {
+      const session = await getCurrentUser();
+      if (
+        !session ||
+        !session.user ||
+        !session.user.id ||
+        session.user.userRole !== "org_user"
+      ) {
+        return null;
+      }
+      const [orgUser] = await ctx.db
+        .select()
+        .from(studentSubscription)
+        .where(eq(studentSubscription.organisationId, input.orgId));
+      return orgUser ?? null;
+    }),
   createOrgUser: privateProcedure
     .input(z.object({ orgId: z.string().min(1) }))
     .query(async ({ ctx, input }) => {
@@ -57,7 +73,7 @@ export const orgUserRouter = createTRPCRouter({
 
       const nanoidValue = nanoid();
       const date = new Date();
-      const orgUser = await ctx.db
+      const [orgUser] = await ctx.db
         .insert(studentSubscription)
         .values({
           id: nanoidValue,
@@ -70,6 +86,6 @@ export const orgUserRouter = createTRPCRouter({
         })
         .returning();
 
-      return orgUser;
+      return orgUser ?? null;
     }),
 });

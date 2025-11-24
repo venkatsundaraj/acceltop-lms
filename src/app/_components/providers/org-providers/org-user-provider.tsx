@@ -13,7 +13,7 @@ import React, {
 
 export type OrgUserContextSchema = {
   orgUser: OrgUserSchema | null;
-  sessionUser: { id: string | null; role: string | null };
+  sessionUser: { id: string | null; role: string | null; name: string | null };
 };
 
 export type OrgUserProviderProps = {
@@ -32,6 +32,7 @@ export const OrgUserContextProvider = function ({
     sessionUser: {
       id: data?.user.id ?? null,
       role: data?.user.userRole ?? null,
+      name: data?.user.name ?? null,
     },
   };
 

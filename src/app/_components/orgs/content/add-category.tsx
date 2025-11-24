@@ -106,11 +106,11 @@ const AddCategory: FC<AddCategoryProps> = ({}) => {
           </Button>
         </div>
       </form>
-      <ul className="w-full grid grid-cols-1 gap-1.5 md:grid-cols-3 items-center justify-center">
+      <ul className="container md:p-12 grid grid-cols-1 gap-1.5 md:grid-cols-3 items-center justify-center">
         {categoryList?.map((item, i) => (
           <li
             key={item.id}
-            className="border-2 border-accent text-primary w-full flex items-center justify-center text-tertiary-heading font-normal leading-normal tracking-tight py-2 rounded-md "
+            className="border-2 border-accent hover:bg-accent/70 cursor-pointer text-primary w-full flex items-center justify-center text-tertiary-heading font-normal leading-normal tracking-tight py-2 rounded-md "
           >
             <Link href={`/org/${org?.slug}/content/category/${item.slug}`}>
               {item.name}

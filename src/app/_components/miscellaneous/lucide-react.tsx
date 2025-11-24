@@ -12,6 +12,7 @@ import {
   RadioReceiver,
   Grid2X2,
   Loader2,
+  X,
   RadioTower,
   Book,
 } from "lucide-react";
@@ -22,6 +23,7 @@ export const Icons = {
   BookOpenCheck,
   Grid2X2,
   Loader2,
+  X,
   VideoIcon,
   Podcast,
   RectangleEllipsis,

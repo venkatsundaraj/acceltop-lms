@@ -18,6 +18,8 @@ import Link from "next/link";
 import { useOrgContext } from "../../providers/org-providers/org-provider";
 import { useParams } from "next/navigation";
 
+import AddMicroTopic from "./add-micro-topic";
+
 interface AddSubCategoryProps {}
 
 const AddSubCategory: FC<AddSubCategoryProps> = ({}) => {
@@ -50,6 +52,9 @@ const AddSubCategory: FC<AddSubCategoryProps> = ({}) => {
         await apiClient.contentManagement.getAllSubCategories.cancel();
         const prev =
           await apiClient.contentManagement.getAllSubCategories.getData();
+        const tempId = `temp-${Date.now()}-${Math.random()
+          .toString(36)
+          .substr(2, 9)}`;
 
         await apiClient.contentManagement.getAllSubCategories.setData(
           { categorySlug: slugify(category), organisationId: org.id },
@@ -59,7 +64,7 @@ const AddSubCategory: FC<AddSubCategoryProps> = ({}) => {
               ...old,
               {
                 id: "temp-id",
-                categoryId: "temp-id",
+                categoryId: tempId,
                 name: data.title,
                 slug: slugify(data.title),
                 createdAt: new Date(),
@@ -81,7 +86,7 @@ const AddSubCategory: FC<AddSubCategoryProps> = ({}) => {
         toast("Something went wrong");
       },
       onSettled: () => {
-        // apiClient.contentManagement.getAllCategories.invalidate();
+        apiClient.contentManagement.getAllSubCategories.invalidate();
       },
     });
 
@@ -117,14 +122,12 @@ const AddSubCategory: FC<AddSubCategoryProps> = ({}) => {
           </Button>
         </div>
       </form>
-      <ul className="w-full grid grid-cols-1 gap-1.5 md:grid-cols-3 items-center justify-center">
+      <ul className="container md:p-12 grid grid-cols-1 gap-6 md:grid-cols-3 items-center justify-center">
         {subCategoryList?.map((item, i) => (
-          <li
+          <AddMicroTopic
             key={item.id}
-            className="border-2 border-accent text-primary w-full flex items-center justify-center text-tertiary-heading font-normal leading-normal tracking-tight py-2 rounded-md "
-          >
-            <h3>{item.name}</h3>
-          </li>
+            subCategory={{ ...item, organisationId: org.id }}
+          />
         ))}
       </ul>
     </div>

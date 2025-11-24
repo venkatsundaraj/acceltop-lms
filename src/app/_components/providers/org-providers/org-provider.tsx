@@ -15,7 +15,7 @@ import { Icons } from "../../miscellaneous/lucide-react";
 
 export type OrgContextSchema = {
   org: OrgSchema;
-  sessionUser: { id: string | null; role: string | null };
+  sessionUser: { id: string | null; role: string | null; name: string | null };
 };
 
 interface OrgContextProviderProps {
@@ -57,6 +57,7 @@ export const OrgContextProvider = function ({
     org: result.uniqueOrg,
     sessionUser: {
       id: sessionData?.user.id ?? null,
+      name: sessionData?.user.name ?? null,
       role: sessionData?.user.userRole ?? null,
     },
   };

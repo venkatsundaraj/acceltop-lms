@@ -14,26 +14,32 @@ import {
   questionTypeEnum,
 } from "./module-enums";
 
-export const category = createTable("category", {
-  id: text("id").primaryKey(),
-  name: text("name").notNull(),
-  slug: text("slug").notNull().unique(),
-  description: text("description"),
-  icon: text("icon"),
-  organisationId: text("organisation_id")
-    .notNull()
-    .references(() => organisation.id, { onDelete: "cascade" }),
+export const category = createTable(
+  "category",
+  {
+    id: text("id").primaryKey(),
+    name: text("name").notNull(),
+    slug: text("slug").notNull(),
+    description: text("description"),
+    icon: text("icon"),
+    organisationId: text("organisation_id")
+      .notNull()
+      .references(() => organisation.id, { onDelete: "cascade" }),
 
-  order: integer("order").default(0),
-  isActive: boolean("is_active").default(true),
+    order: integer("order").default(0),
+    isActive: boolean("is_active").default(true),
 
-  createdAt: timestamp("created_at")
-    .$defaultFn(() => new Date())
-    .notNull(),
-  updatedAt: timestamp("updated_at")
-    .$defaultFn(() => new Date())
-    .notNull(),
-});
+    createdAt: timestamp("created_at")
+      .$defaultFn(() => new Date())
+      .notNull(),
+    updatedAt: timestamp("updated_at")
+      .$defaultFn(() => new Date())
+      .notNull(),
+  },
+  (table) => ({
+    uniqueCategoryId: unique().on(table.organisationId, table.slug),
+  })
+);
 
 export const subCategory = createTable(
   "sub_category",
@@ -125,62 +131,70 @@ export const qbank = createTable("qbank", {
     .notNull(),
 });
 
-export const question = createTable("question", {
-  id: text("id").primaryKey(),
-  questionText: text("question_test").notNull(),
-  questionType: questionTypeEnum("question_type")
-    .default("multiple_choice")
-    .notNull(),
+export const question = createTable(
+  "question",
+  {
+    id: text("id").primaryKey(),
+    questionText: text("question_test").notNull(),
+    questionType: questionTypeEnum("question_type")
+      .default("multiple_choice")
+      .notNull(),
 
-  qbankId: text("qbank_id")
-    .notNull()
-    .references(() => qbank.id),
-  microTopicId: text("micro_topic_id")
-    .notNull()
-    .references(() => microTopic.id),
+    qbankId: text("qbank_id")
+      .notNull()
+      .references(() => qbank.id),
+    microTopicId: text("micro_topic_id")
+      .notNull()
+      .references(() => microTopic.id),
 
-  images: json("images").$type<{ type: string[] }>(),
-  videos: json("images").$type<{ type: string[] }>(),
+    images: json("images").$type<{ type: string[] }>(),
+    videos: json("images").$type<{ type: string[] }>(),
 
-  options: json("options").$type<{
-    id: string;
-    text: string;
-    image?: string;
-    isCorrect: boolean;
-  }>(),
+    options: json("options").$type<{
+      id: string;
+      text: string;
+      image?: string;
+      isCorrect: boolean;
+    }>(),
 
-  references: json("references").$type<
-    {
-      title: string;
-      author?: string;
-      url?: string;
-      page?: string;
-    }[]
-  >(),
+    references: json("references").$type<
+      {
+        title: string;
+        author?: string;
+        url?: string;
+        page?: string;
+      }[]
+    >(),
 
-  explanation: text("explanation"),
-  explanationImages: json("explanation_images").$type<string[]>(),
-  explanationVideos: json("explanation_videos").$type<string[]>(),
+    explanation: text("explanation"),
+    explanationImages: json("explanation_images").$type<string[]>(),
+    explanationVideos: json("explanation_videos").$type<string[]>(),
 
-  difficulty: difficultyLevelEnum("difficulty"),
-  tags: json("tags").$type<string[]>(),
+    difficulty: difficultyLevelEnum("difficulty"),
+    tags: json("tags").$type<string[]>(),
 
-  timesAttempted: integer("times_attempted").default(0),
-  timesCorrect: integer("times_correct").default(0),
-  avgTimeSpent: integer("avg_time_spent").default(0),
+    timesAttempted: integer("times_attempted").default(0),
+    timesCorrect: integer("times_correct").default(0),
+    avgTimeSpent: integer("avg_time_spent").default(0),
 
-  status: contentStatusEnum("status").default("draft").notNull(),
-  isActive: boolean("is_active").default(true).notNull(),
+    status: contentStatusEnum("status").default("draft").notNull(),
+    isActive: boolean("is_active").default(true).notNull(),
 
-  createdBy: text("created_by")
-    .notNull()
-    .references(() => user.id),
+    createdBy: text("created_by")
+      .notNull()
+      .references(() => user.id),
 
-  createdAt: timestamp("created_at")
-    .$defaultFn(() => new Date())
-    .notNull(),
-  updatedAt: timestamp("updated_at")
-    .$defaultFn(() => new Date())
-    .notNull(),
-  publishedAt: timestamp("published_at"),
-});
+    createdAt: timestamp("created_at")
+      .$defaultFn(() => new Date())
+      .notNull(),
+    updatedAt: timestamp("updated_at")
+      .$defaultFn(() => new Date())
+      .notNull(),
+    publishedAt: timestamp("published_at"),
+  },
+  (table) => ({
+    uniqueQuestions: unique().on(table.qbankId, table.questionText),
+  })
+);
+
+export type SubCategoryType = typeof subCategory.$inferSelect;

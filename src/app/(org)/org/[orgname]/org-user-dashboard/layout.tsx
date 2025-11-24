@@ -14,9 +14,7 @@ interface layoutProps {
 const layout = async ({ params, children }: layoutProps) => {
   const { orgname } = await params;
   const session = await getCurrentUser();
-  const orgUser = await api.orgUser.getOrgUser();
-
-  console.log(orgUser?.organisationId, "org--user");
+  // const orgUser = await api.orgUser.getOrgUser();
 
   if (!session || !session.user.id) {
     notFound();
@@ -28,6 +26,9 @@ const layout = async ({ params, children }: layoutProps) => {
   }
 
   const user = await api.org.getOrg();
+  const orgUser = await api.orgUser.getOrgUserFromOrgId({
+    orgId: uniqueOrg.id,
+  });
 
   // what if the org user comes here - (it would always be active, right, so it won't be a problem)
   if (user?.status === "active") {
@@ -36,7 +37,7 @@ const layout = async ({ params, children }: layoutProps) => {
     });
     notFound();
   }
-  if (!orgUser?.organisationId) {
+  if (!orgUser) {
     const user = await api.orgUser.createOrgUser({ orgId: uniqueOrg.id });
   }
 

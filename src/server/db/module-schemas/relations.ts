@@ -58,8 +58,9 @@ export const questionRelations = relations(question, ({ one, many }) => ({
     fields: [question.createdBy],
     references: [user.id],
   }),
-  microTopic: one(microTopic, {
-    fields: [question.microTopicId],
-    references: [microTopic.id],
-  }),
+  microTopic: many(microTopic),
+  // microTopic: one(microTopic, {
+  //   fields: [question.microTopicId],
+  //   references: [microTopic.id],
+  // }),
 }));
