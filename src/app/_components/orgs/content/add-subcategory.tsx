@@ -122,7 +122,7 @@ const AddSubCategory: FC<AddSubCategoryProps> = ({}) => {
           </Button>
         </div>
       </form>
-      <ul className="container md:p-12 grid grid-cols-1 gap-6 md:grid-cols-3 items-center justify-center">
+      <ul className="container md:p-12 grid grid-cols-1 gap-6 md:grid-cols-4 items-center justify-center">
         {subCategoryList?.map((item, i) => (
           <AddMicroTopic
             key={item.id}

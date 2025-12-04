@@ -97,6 +97,10 @@ export const orgRouter = createTRPCRouter({
   createOrganisation: publicProcedure
     .input(orgValidation)
     .mutation(async ({ ctx, input }) => {
+      const session = await getCurrentUser();
+      if (!session || !session.user || !session.user.id) {
+        return null;
+      }
       const existingOrg = await ctx.db
         .select()
         .from(schema.organisation)
@@ -133,10 +137,13 @@ export const orgRouter = createTRPCRouter({
         })
         .returning();
 
-      const user = await ctx.db.update(schema.user).set({
-        organizationId: newOrg.id,
-        userStatus: "active",
-      });
+      const user = await ctx.db
+        .update(schema.user)
+        .set({
+          organizationId: newOrg.id,
+          userStatus: "active",
+        })
+        .where(eq(schema.user.id, session.user.id));
 
       return {
         user,

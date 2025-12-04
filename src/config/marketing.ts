@@ -106,42 +106,42 @@ export const orgNavbarItems: {
 }[] = [
   {
     title: "QBank",
-    url: "/q-bank",
+    url: "q-bank",
     icon: "BookOpenCheck",
   },
   {
     title: "Tests",
-    url: "/test",
+    url: "test",
     icon: "BookCheck",
   },
   {
     title: "Videos",
-    url: "/videos",
+    url: "videos",
     icon: "VideoIcon",
   },
   {
     title: "Flashcards",
-    url: "/flashcards",
+    url: "flashcards",
     icon: "Diamond",
   },
   {
     title: "MCQ",
-    url: "/mcq",
+    url: "mcq",
     icon: "RectangleEllipsis",
   },
   {
     title: "E-Book",
-    url: "/e-book",
+    url: "e-book",
     icon: "Book",
   },
   {
     title: "Podcast",
-    url: "/podcast",
+    url: "podcast",
     icon: "Podcast",
   },
   {
     title: "Live",
-    url: "/live",
+    url: "live",
     icon: "RadioTower",
   },
 ];

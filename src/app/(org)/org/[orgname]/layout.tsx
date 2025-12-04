@@ -39,7 +39,7 @@ const layout = async ({ children, params }: layoutProps) => {
   return (
     <DashboardProvider>
       <SidebarProvider>
-        <AppSidebar />
+        <AppSidebar params={params} />
         <main className="w-full">
           <nav className="w-full ">
             <div className="container flex items-center justify-between py-4">

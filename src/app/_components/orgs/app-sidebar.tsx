@@ -1,39 +1,38 @@
+import CustomSidebarHeader from "@/app/_components/orgs/custom-sidebar-header";
 import {
   Sidebar,
   SidebarContent,
   SidebarFooter,
-  SidebarGroup,
-  SidebarHeader,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/app/_components/ui/sidebar";
-import { UserSchema } from "@/server/db/schema";
-import { OrgSchema } from "@/server/db/organisation";
-import { FC } from "react";
 import { orgNavbarItems } from "@/config/marketing";
-import Link from "next/link";
-import { Icons } from "../miscellaneous/lucide-react";
 import { getCurrentUser } from "@/lib/session";
 import { api } from "@/trpc/server";
-import CustomSidebarHeader from "@/app/_components/orgs/custom-sidebar-header";
+import Link from "next/link";
+import { Icons } from "../miscellaneous/lucide-react";
 
-interface AppSidebarProps {}
+interface AppSidebarProps {
+  params: Promise<{ orgname: string }>;
+}
 
-export const AppSidebar = async function ({}: AppSidebarProps) {
+export const AppSidebar = async function ({ params }: AppSidebarProps) {
+  const slug = await params;
+  const { orgname } = slug;
   const session = await getCurrentUser();
-  const org = await api.org.getOrg();
+  const { uniqueOrg } = await api.org.getOrgBySlug({ orgSlug: orgname });
 
   return (
     <Sidebar className="bg-background py-5">
       <CustomSidebarHeader />
       <SidebarContent className="bg-background px-3 py-8 flex flex-col items-start justify-start">
-        {org?.slug ? (
+        {uniqueOrg?.slug && session?.user.userRole === "org" ? (
           <>
             <SidebarMenu>
               <SidebarMenuItem>
                 <SidebarMenuButton asChild>
-                  <Link href={`/org/${org.slug}/app`}>
+                  <Link href={`/org/${uniqueOrg.slug}/app`}>
                     <Icons.LayoutDashboard />
                     <span>Dashboard</span>
                   </Link>
@@ -41,7 +40,7 @@ export const AppSidebar = async function ({}: AppSidebarProps) {
               </SidebarMenuItem>
               <SidebarMenuItem>
                 <SidebarMenuButton asChild>
-                  <Link href={`/org/${org.slug}/content/category`}>
+                  <Link href={`/org/${uniqueOrg.slug}/content/category`}>
                     <Icons.Grid2X2 />
                     <span>Content</span>
                   </Link>
@@ -59,7 +58,7 @@ export const AppSidebar = async function ({}: AppSidebarProps) {
             return (
               <SidebarMenuItem key={i}>
                 <SidebarMenuButton asChild>
-                  <Link href={`/org/${org?.slug}/${item.url}`}>
+                  <Link href={`/org/${uniqueOrg?.slug}/${item.url}`}>
                     <Icon />
                     <span>{item.title}</span>
                   </Link>
@@ -70,7 +69,7 @@ export const AppSidebar = async function ({}: AppSidebarProps) {
         </SidebarMenu>
         {session?.user ? (
           <SidebarMenu>
-            <h5 className="text-foreground/50 mb-4 uppercase font-bold text-subtitle-heading text-left leading-tight tracking-normal font-paragraph  max-w-2xl">
+            <h5 className="text-foreground/50 my-4 uppercase font-bold text-subtitle-heading text-left leading-tight tracking-normal font-paragraph  max-w-2xl">
               My Account
             </h5>
 

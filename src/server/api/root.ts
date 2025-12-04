@@ -4,6 +4,7 @@ import { adminRouter } from "@/server/api/routers/admin-router";
 import { orgRouter } from "@/server/api/routers/org-router";
 import { orgUserRouter } from "@/server/api/routers/org-user-router";
 import { contentMangementRouter } from "./routers/org-actions/content-management-router";
+import { orgQBankRouter } from "./routers/org-actions/qbank-router";
 
 /**
  * This is the primary router for your server.
@@ -16,6 +17,7 @@ export const appRouter = createTRPCRouter({
   org: orgRouter,
   orgUser: orgUserRouter,
   contentManagement: contentMangementRouter,
+  orgQBank: orgQBankRouter,
 });
 
 // export type definition of API

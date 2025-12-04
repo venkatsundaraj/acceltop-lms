@@ -28,7 +28,7 @@ const page = async ({}: pageProps) => {
   }
 
   const result = await handleTRPCCall(() => api.org.getOrg());
-  // console.log("result", result);
+  console.log("result", result, session.user.organizationId);
 
   if (result.error) {
     if (result.error.needsRedirect) {

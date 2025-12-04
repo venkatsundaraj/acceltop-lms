@@ -31,8 +31,8 @@ const getTrustedOrigins = () => {
   add(toOrigin(env.VERCEL_URL));
   add(toWWWOrigin(env.VERCEL_URL));
 
-  add("http://localhost:3000"); // local dev
-  add("http://localhost:3001"); // local dev
+  add("http://localhost:3000");
+  add("http://localhost:3001");
 
   return Array.from(origins);
 };
@@ -125,8 +125,6 @@ export const auth = betterAuth({
           signupSource
         );
 
-        //updating the existing schema
-
         const [user] = await db
           .update(schema.user)
           .set({
@@ -136,7 +134,7 @@ export const auth = betterAuth({
           })
           .where(eq(schema.user.id, session?.user.id!))
           .returning();
-
+        console.log("user-auth", user);
         if (user.userRole === "admin") {
           console.log("admin redirection");
           return ctx.redirect("/super-admin/dashboard");

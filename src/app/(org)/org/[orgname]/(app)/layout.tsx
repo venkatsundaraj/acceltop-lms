@@ -13,7 +13,7 @@ const layout = async ({ children }: layoutProps) => {
     notFound();
   }
 
-  return <div>{children}</div>;
+  return <>{children}</>;
 };
 
 export default layout;
