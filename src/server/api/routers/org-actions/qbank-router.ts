@@ -1,10 +1,12 @@
-import { qBankSchema } from "@/lib/validation/modules";
+import { qBankSchema, questionFormSchema } from "@/lib/validation/modules";
 import { createTRPCRouter, orgProcedure, publicProcedure } from "../../trpc";
 import z from "zod";
 import {
   category,
+  ListOfQuestionsType,
   organisation,
   qbank,
+  question,
   subCategory,
 } from "@/server/db/index-schema";
 import { nanoid } from "nanoid";
@@ -42,61 +44,198 @@ export const orgQBankRouter = createTRPCRouter({
   getAllQbankDetails: publicProcedure
     .input(z.object({ orgId: z.string() }))
     .query(async ({ ctx, input }) => {
-      const categoryIds = await ctx.db
-        .selectDistinct({
-          categoryId: qbank.categoryId,
-          categoryName: category.name,
-          categorySlug: category.slug,
-        })
-        .from(qbank)
-        .innerJoin(category, eq(qbank.categoryId, category.id))
-        .where(eq(qbank.organisationId, input.orgId));
-
-      return { success: true, items: categoryIds };
+      const qbanks = await ctx.db.query.qbank.findMany({
+        where: eq(qbank.organisationId, input.orgId),
+        columns: {
+          categoryId: true,
+        },
+        with: {
+          category: {
+            columns: {
+              id: true,
+              name: true,
+              slug: true,
+            },
+          },
+        },
+      });
+      const result = Array.from(
+        new Map(
+          qbanks.map((q) => [
+            q.category.id,
+            {
+              categoryId: q.category.id,
+              categoryName: q.category.name,
+              categorySlug: q.category.slug,
+            },
+          ])
+        ).values()
+      );
+      return { success: true, items: result };
     }),
 
   getAllSubcategoriesFromCategorySlugAndOrgSlug: publicProcedure
     .input(
-      z.object({ orgSlug: z.string().min(1), categorySlug: z.string().min(1) })
+      z.object({
+        orgSlug: z.string().min(1),
+        categorySlug: z.string().min(1),
+        orgId: z.string().min(1),
+      })
     )
     .query(async ({ ctx, input }) => {
-      const subCategoryList = await ctx.db
-        .select({
-          subCategoryId: subCategory.id,
-          subCategoryName: subCategory.name,
-          subCategorySlug: subCategory.slug,
-          category: category.name,
-        })
-        .from(subCategory)
-        .innerJoin(
-          category,
+      const [categoryItem] = await ctx.db
+        .select()
+        .from(category)
+        .where(
           and(
-            eq(subCategory.categoryId, category.id),
-            eq(category.slug, input.categorySlug)
+            eq(category.slug, input.categorySlug),
+            eq(category.organisationId, input.orgId)
           )
-        )
-        .innerJoin(organisation, and(eq(organisation.slug, input.orgSlug)));
+        );
 
-      return subCategoryList ?? [];
+      const qbanks = await ctx.db.query.qbank.findMany({
+        where: and(
+          eq(qbank.organisationId, input.orgId),
+          eq(qbank.categoryId, categoryItem.id)
+        ),
+        columns: {
+          subCategoryId: true,
+        },
+        with: {
+          subCategory: {
+            columns: {
+              id: true,
+              name: true,
+              slug: true,
+            },
+          },
+        },
+      });
+
+      const result = Array.from(
+        new Map(
+          qbanks.map((q) => [
+            q.subCategory.id,
+            {
+              subCategoryId: q.subCategory.id,
+              subCategoryName: q.subCategory.name,
+              subCategorySlug: q.subCategory.slug,
+            },
+          ])
+        ).values()
+      );
+
+      return result ?? [];
     }),
 
   getAllQBankTitle: publicProcedure
     .input(
-      z.object({ categorySlug: z.string().min(1), orgSlug: z.string().min(1) })
+      z.object({
+        categorySlug: z.string().min(1),
+        orgSlug: z.string().min(1),
+        orgId: z.string().min(1),
+      })
     )
     .query(async ({ input, ctx }) => {
-      const qbankTitle = await ctx.db
-        .select({ qbankTitle: qbank.name })
-        .from(qbank)
-        .innerJoin(
-          category,
+      const [categoryItem] = await ctx.db
+        .select({ id: category.id })
+        .from(category)
+        .where(
           and(
-            eq(qbank.categoryId, category.id),
-            eq(category.slug, input.categorySlug)
+            eq(category.slug, input.categorySlug),
+            eq(category.organisationId, input.orgId)
           )
-        )
-        .innerJoin(organisation, and(eq(organisation.slug, input.orgSlug)));
-      console.log(qbankTitle);
-      return qbankTitle ?? [];
+        );
+
+      const qBankTitle = await ctx.db.query.qbank.findMany({
+        where: and(eq(qbank.categoryId, categoryItem.id)),
+        columns: {
+          name: true,
+          id: true,
+        },
+      });
+
+      return qBankTitle ?? [];
+    }),
+  addQuestionsWithExplanations: orgProcedure
+    .input(
+      questionFormSchema.extend({
+        qbankdId: z.string(),
+        microTopicdId: z.string().nullable(),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      try {
+        const session = await getCurrentUser();
+
+        if (!session?.user || !session.user.id) {
+          throw new TRPCError({ code: "UNAUTHORIZED" });
+        }
+
+        const questionsToInsert: ListOfQuestionsType[] = input.questions.map(
+          (item, i) => ({
+            id: nanoid(),
+            questionText: item.questionText,
+            options: item.options.map((q) => ({
+              id: q.id || nanoid(),
+              text: q.text,
+              image: q.url || undefined,
+              isCorrect: q.isCorrect,
+            })),
+            explanation: item.explanation,
+
+            createdBy: session.user.id!,
+            qbankId: input.qbankdId,
+            microTopicId: input.microTopicdId,
+
+            questionType: "multiple_choice",
+            explanationImages: [],
+            explanationVideos: [],
+            images: [],
+            videos: [],
+            references: [],
+            difficulty: "medium" as const,
+            tags: [],
+            timesAttempted: 0,
+            timesCorrect: 0,
+            avgTimeSpent: 0,
+            status: "draft" as const,
+            isActive: true,
+            createdAt: new Date(),
+            updatedAt: new Date(),
+            publishedAt: null,
+          })
+        );
+
+        const insertedQuestions = await ctx.db
+          .insert(question)
+          .values(questionsToInsert)
+          .returning();
+        return {
+          success: true,
+          items: insertedQuestions,
+          count: insertedQuestions.length,
+        };
+      } catch (err) {
+        console.log(err);
+      }
     }),
 });
+
+//example of innerjoin format
+// const subCategoryList = await ctx.db
+//   .select({
+//     subCategoryId: subCategory.id,
+//     subCategoryName: subCategory.name,
+//     subCategorySlug: subCategory.slug,
+//     category: category.name,
+//   })
+//   .from(subCategory)
+//   .innerJoin(
+//     category,
+//     and(
+//       eq(subCategory.categoryId, category.id),
+//       eq(category.slug, input.categorySlug)
+//     )
+//   )
+//   .innerJoin(organisation, and(eq(organisation.slug, input.orgSlug)));

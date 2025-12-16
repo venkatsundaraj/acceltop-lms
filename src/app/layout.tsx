@@ -29,7 +29,7 @@ export default function RootLayout({
       <body className={`${heading.variable} ${paragraph.variable} antialiased`}>
         <ThemeProvider
           attribute="class"
-          defaultTheme="system"
+          defaultTheme="light"
           enableSystem
           disableTransitionOnChange
         >

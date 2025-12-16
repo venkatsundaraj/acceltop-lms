@@ -1,5 +1,8 @@
+import { getCurrentUser } from "@/lib/session";
+import { slugify } from "@/lib/utils";
 import { api } from "@/trpc/server";
 import Link from "next/link";
+import { notFound } from "next/navigation";
 import { FC } from "react";
 
 interface pageProps {
@@ -9,14 +12,22 @@ interface pageProps {
 const page = async ({ params }: pageProps) => {
   const { category, orgname } = await params;
 
+  const session = await getCurrentUser();
+
+  if (!session?.user.organizationId) {
+    notFound();
+  }
+
   const [subCategoryList, qBankList] = await Promise.all([
     await api.orgQBank.getAllSubcategoriesFromCategorySlugAndOrgSlug({
       categorySlug: category,
       orgSlug: orgname,
+      orgId: session.user.organizationId,
     }),
     await api.orgQBank.getAllQBankTitle({
       categorySlug: category,
       orgSlug: orgname,
+      orgId: session.user.organizationId,
     }),
   ]);
 
@@ -26,9 +37,12 @@ const page = async ({ params }: pageProps) => {
         <div className="md:col-start-1 md:col-end-4 w-full  ">
           <ul className="container grid grid-cols-1 gap-4 md:grid-cols-2  justify-center">
             {qBankList?.map((item, i) => (
-              <Link key={i} href={`/`}>
+              <Link
+                key={i}
+                href={`/org/${orgname}/q-bank/${category}/${item.id}`}
+              >
                 <li className="bg-accent hover:bg-accent/90 p-2 cursor-pointer text-primary w-full flex items-start justify-left text-subtitle-heading font-normal leading-normal tracking-tight rounded-sm">
-                  {item.qbankTitle}
+                  {item.name}
                 </li>
               </Link>
             ))}

@@ -143,19 +143,19 @@ export const question = createTable(
     qbankId: text("qbank_id")
       .notNull()
       .references(() => qbank.id),
-    microTopicId: text("micro_topic_id")
-      .notNull()
-      .references(() => microTopic.id),
+    microTopicId: text("micro_topic_id").references(() => microTopic.id),
 
-    images: json("images").$type<{ type: string[] }>(),
-    videos: json("images").$type<{ type: string[] }>(),
+    images: json("images").$type<string[]>(),
+    videos: json("videos").$type<string[]>(),
 
-    options: json("options").$type<{
-      id: string;
-      text: string;
-      image?: string;
-      isCorrect: boolean;
-    }>(),
+    options: json("options").$type<
+      {
+        id: string;
+        text: string;
+        image?: string;
+        isCorrect: boolean;
+      }[]
+    >(),
 
     references: json("references").$type<
       {
@@ -198,3 +198,4 @@ export const question = createTable(
 );
 
 export type SubCategoryType = typeof subCategory.$inferSelect;
+export type ListOfQuestionsType = typeof question.$inferSelect;

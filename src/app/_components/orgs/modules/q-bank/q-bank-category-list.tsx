@@ -12,7 +12,6 @@ const QBankTitleList: FC<QBankTitleListProps> = ({}) => {
   const { data: categoryList } = api.orgQBank.getAllQbankDetails.useQuery({
     orgId: org.id,
   });
-  console.log(categoryList);
   return (
     <ul className="container py-12 grid grid-cols-1 gap-5 md:grid-cols-4 items-center justify-center">
       {categoryList?.items?.map((item, i) => (

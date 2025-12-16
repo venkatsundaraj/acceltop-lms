@@ -21,7 +21,7 @@ const layout = async ({ children }: layoutProps) => {
   }
 
   return (
-    <main className="w-screen max-h-screen h-full flex items-center justify-center bg-background">
+    <main className="w-screen h-full flex items-center justify-center bg-background">
       <Toaster />
       {children}
     </main>
