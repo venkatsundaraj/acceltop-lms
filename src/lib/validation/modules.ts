@@ -6,6 +6,18 @@ import z from "zod";
 // type HelloType = z.infer<typeof helloEnum>
 // const val: HelloType = "three";
 
+export const qBankValues = [
+  "multiple_choice",
+  "true_false",
+  "sigle_choice",
+  "fill_in_bank",
+  "match_following",
+  "clinical_based",
+  "image_based",
+] as const;
+
+export type QBankType = (typeof qBankValues)[number];
+
 export const qBankSchema = z.object({
   title: z.string().min(10),
   category: z.string().min(1),
@@ -31,6 +43,8 @@ export const optionSchema = z.object({
 });
 
 export const questionSchema = z.object({
+  id: z.string(),
+  hello: z.string().optional(),
   questionText: z.string(),
   options: z
     .array(optionSchema)

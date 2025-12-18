@@ -1,4 +1,8 @@
-import { qBankSchema, questionFormSchema } from "@/lib/validation/modules";
+import {
+  qBankSchema,
+  QBankType,
+  questionFormSchema,
+} from "@/lib/validation/modules";
 import { createTRPCRouter, orgProcedure, publicProcedure } from "../../trpc";
 import z from "zod";
 import {
@@ -172,40 +176,97 @@ export const orgQBankRouter = createTRPCRouter({
           throw new TRPCError({ code: "UNAUTHORIZED" });
         }
 
-        const questionsToInsert: ListOfQuestionsType[] = input.questions.map(
-          (item, i) => ({
-            id: nanoid(),
-            questionText: item.questionText,
-            options: item.options.map((q) => ({
-              id: q.id || nanoid(),
-              text: q.text,
-              image: q.url || undefined,
-              isCorrect: q.isCorrect,
-            })),
-            explanation: item.explanation,
+        const existingQuestions = await ctx.db
+          .select()
+          .from(question)
+          .where(eq(question.qbankId, input.qbankdId));
 
-            createdBy: session.user.id!,
-            qbankId: input.qbankdId,
-            microTopicId: input.microTopicdId,
-
-            questionType: "multiple_choice",
-            explanationImages: [],
-            explanationVideos: [],
-            images: [],
-            videos: [],
-            references: [],
-            difficulty: "medium" as const,
-            tags: [],
-            timesAttempted: 0,
-            timesCorrect: 0,
-            avgTimeSpent: 0,
-            status: "draft" as const,
-            isActive: true,
-            createdAt: new Date(),
-            updatedAt: new Date(),
-            publishedAt: null,
-          })
+        const mappingExistingValues = new Map<string, ListOfQuestionsType>(
+          existingQuestions.map((item) => [item.id, { ...item }])
         );
+        const currentInputValues = new Map<string, ListOfQuestionsType>(
+          input.questions.map((item) => [
+            item.id,
+            {
+              id: item.id,
+              questionText: item.questionText,
+              options: item.options.map((q) => ({
+                id: q.id || nanoid(),
+                text: q.text,
+                image: q.url || undefined,
+                isCorrect: q.isCorrect,
+              })),
+              explanation: item.explanation,
+
+              createdBy: session.user.id!,
+              qbankId: input.qbankdId,
+              microTopicId: input.microTopicdId,
+
+              questionType: "multiple_choice" as QBankType,
+              explanationImages: [],
+              explanationVideos: [],
+              images: [],
+              videos: [],
+              references: [],
+              difficulty: "medium" as const,
+              tags: [],
+              timesAttempted: 0,
+              timesCorrect: 0,
+              avgTimeSpent: 0,
+              status: "draft" as const,
+              isActive: true,
+              createdAt: new Date(),
+              updatedAt: new Date(),
+              publishedAt: null,
+            },
+          ])
+        );
+
+        // const questionsToInsert: ListOfQuestionsType[] = input.questions.map(
+        //   (item, i) => ({
+        //     id: nanoid(),
+        //     questionText: item.questionText,
+        //     options: item.options.map((q) => ({
+        //       id: q.id || nanoid(),
+        //       text: q.text,
+        //       image: q.url || undefined,
+        //       isCorrect: q.isCorrect,
+        //     })),
+        //     explanation: item.explanation,
+
+        //     createdBy: session.user.id!,
+        //     qbankId: input.qbankdId,
+        //     microTopicId: input.microTopicdId,
+
+        //     questionType: "multiple_choice" as QBankType,
+        //     explanationImages: [],
+        //     explanationVideos: [],
+        //     images: [],
+        //     videos: [],
+        //     references: [],
+        //     difficulty: "medium" as const,
+        //     tags: [],
+        //     timesAttempted: 0,
+        //     timesCorrect: 0,
+        //     avgTimeSpent: 0,
+        //     status: "draft" as const,
+        //     isActive: true,
+        //     createdAt: new Date(),
+        //     updatedAt: new Date(),
+        //     publishedAt: null,
+        //   })
+        // );
+
+        const result = new Map<string, ListOfQuestionsType>([
+          ...mappingExistingValues,
+          ...currentInputValues,
+        ]);
+
+        const questionsToInsert = Array.from(result.values());
+
+        await ctx.db
+          .delete(question)
+          .where(eq(question.qbankId, input.qbankdId));
 
         const insertedQuestions = await ctx.db
           .insert(question)
@@ -213,12 +274,23 @@ export const orgQBankRouter = createTRPCRouter({
           .returning();
         return {
           success: true,
+          // result: Array.from(result.values()),
           items: insertedQuestions,
-          count: insertedQuestions.length,
+          // count: insertedQuestions.length,
         };
       } catch (err) {
         console.log(err);
       }
+    }),
+  fetchAllQuestionsFromId: publicProcedure
+    .input(z.object({ id: z.string() }))
+    .query(async ({ ctx, input }) => {
+      const questions = await ctx.db
+        .select()
+        .from(question)
+        .where(eq(question.qbankId, input.id));
+
+      return questions ?? [];
     }),
 });
 

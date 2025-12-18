@@ -9,14 +9,17 @@ import { QuestionFormData, questionFormSchema } from "@/lib/validation/modules";
 import { api } from "@/trpc/react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Check } from "lucide-react";
+import { nanoid } from "nanoid";
 import { useParams } from "next/navigation";
 import { FC, useEffect } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
+import { toast } from "sonner";
 
 interface AddQuestionsProps {}
 
 const AddQuestions: FC<AddQuestionsProps> = () => {
-  const { id: qbankId } = useQbankProvider();
+  const { id: qbankId, listOfExistingQuestions } = useQbankProvider();
+
   const {
     handleSubmit,
     register,
@@ -27,25 +30,27 @@ const AddQuestions: FC<AddQuestionsProps> = () => {
   } = useForm<QuestionFormData>({
     resolver: zodResolver(questionFormSchema),
     defaultValues: {
-      questions: Array(2)
-        .fill(null)
-        .map(() => ({
-          questionText: "hello-world",
-          options: [
-            { text: "hello-world", isCorrect: false },
-            { text: "hello-world", isCorrect: false },
-            { text: "hello-world", isCorrect: true },
-            { text: "hello-world", isCorrect: false },
-          ],
-          explanation: "hello-worldhello-worldhello-worldhello-world",
+      questions: listOfExistingQuestions.map((item) => ({
+        id: item.id,
+        questionText: item.questionText,
+        options: item.options?.map((o) => ({
+          isCorrect: o.isCorrect,
+          text: o.text,
+          id: o.id,
         })),
+        explanation: item.explanation || "",
+      })),
     },
   });
+
+  useEffect(() => {
+    console.log(errors);
+  }, [errors]);
 
   const { mutateAsync: addQuestionData } =
     api.orgQBank.addQuestionsWithExplanations.useMutation({
       onSuccess: (data) => {
-        console.log(data);
+        toast.success("Your data has been updated");
       },
     });
 
@@ -56,6 +61,7 @@ const AddQuestions: FC<AddQuestionsProps> = () => {
 
   const addQuestion = () => {
     append({
+      id: nanoid(),
       questionText: "",
       options: [
         { text: "", isCorrect: false },
@@ -74,6 +80,7 @@ const AddQuestions: FC<AddQuestionsProps> = () => {
   };
 
   const submitHandler = async function (data: QuestionFormData) {
+    // console.log(data.questions.map((item) => item.id));
     await addQuestionData({
       ...data,
       microTopicdId: null,
