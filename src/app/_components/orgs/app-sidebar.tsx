@@ -21,6 +21,7 @@ export const AppSidebar = async function ({ params }: AppSidebarProps) {
   const slug = await params;
   const { orgname } = slug;
   const session = await getCurrentUser();
+  console.log(session?.user.userRole);
   const { uniqueOrg } = await api.org.getOrgBySlug({ orgSlug: orgname });
 
   return (
@@ -58,7 +59,13 @@ export const AppSidebar = async function ({ params }: AppSidebarProps) {
             return (
               <SidebarMenuItem key={i}>
                 <SidebarMenuButton asChild>
-                  <Link href={`/org/${uniqueOrg?.slug}/${item.url}`}>
+                  <Link
+                    href={`/org/${uniqueOrg?.slug}/${
+                      session?.user.userRole === "org"
+                        ? item.url
+                        : `org-user/${item.url}`
+                    }`}
+                  >
                     <Icon />
                     <span>{item.title}</span>
                   </Link>

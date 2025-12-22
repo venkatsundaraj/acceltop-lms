@@ -20,7 +20,7 @@ const OrgUserLogin: FC<OrgUserLoginProps> = ({}) => {
   const loginHandler = async function () {
     const { data } = await signIn.social({
       provider: "google",
-      callbackURL: `/org/${orgname}/org-user-dashboard`,
+      callbackURL: `/org/${orgname}/org-user`,
     });
     console.log("clicked data", data);
   };

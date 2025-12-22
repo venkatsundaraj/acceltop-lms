@@ -30,10 +30,9 @@ const layout = async ({ children, params }: layoutProps) => {
   ) {
     redirect("/org/onboarding");
   }
-  console.log(uniqueOrg?.slug, orgname);
+
   if (uniqueOrg?.slug.trim() !== orgname.trim()) {
-    console.log("server", true);
-    notFound();
+    // notFound();
   }
 
   return (

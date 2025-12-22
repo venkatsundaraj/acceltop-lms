@@ -3,6 +3,7 @@ import { getCurrentUser } from "@/lib/session";
 import { api } from "@/trpc/server";
 import { headers } from "next/headers";
 import { notFound } from "next/navigation";
+import React from "react";
 
 interface layoutProps {
   params: {
@@ -41,7 +42,7 @@ const layout = async ({ params, children }: layoutProps) => {
     const user = await api.orgUser.createOrgUser({ orgId: uniqueOrg.id });
   }
 
-  return <main className="w-full">{<h1>{children}</h1>}</main>;
+  return <div className="w-full">{children}</div>;
 };
 
 export default layout;

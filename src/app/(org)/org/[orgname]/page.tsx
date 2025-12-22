@@ -16,7 +16,7 @@ interface pageProps {
 }
 
 const page = async ({ children, params }: pageProps) => {
-  return <h1>Hello world</h1>;
+  return <h1>Hello worl. d</h1>;
 };
 
 export default page;

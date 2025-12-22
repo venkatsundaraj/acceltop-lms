@@ -43,10 +43,6 @@ const AddQuestions: FC<AddQuestionsProps> = () => {
     },
   });
 
-  useEffect(() => {
-    console.log(errors);
-  }, [errors]);
-
   const { mutateAsync: addQuestionData } =
     api.orgQBank.addQuestionsWithExplanations.useMutation({
       onSuccess: (data) => {
@@ -80,6 +76,7 @@ const AddQuestions: FC<AddQuestionsProps> = () => {
   };
 
   const submitHandler = async function (data: QuestionFormData) {
+    console.log(data);
     // console.log(data.questions.map((item) => item.id));
     await addQuestionData({
       ...data,
@@ -148,6 +145,7 @@ const AddQuestions: FC<AddQuestionsProps> = () => {
                         className="flex items-center justify-center gap-2"
                       >
                         <button
+                          type="button"
                           onClick={() =>
                             toggleCorrectAnswer(questionIndex, optionIndex)
                           }
