@@ -10,6 +10,7 @@ import {
   TabsTrigger,
 } from "@/app/_components/ui/tabs";
 import TestModeForm from "./test-mode-form";
+// import PracticeModeForm from "./practice-mode-form";
 
 interface TestPracticeTabProps {}
 
@@ -33,10 +34,8 @@ const TestPracticeTab: FC<TestPracticeTabProps> = ({}) => {
             <TestModeForm />
           </div>
         </TabsContent>
-        <TabsContent value="practice">
-          <div className="w-24 h-24">
-            <h3>Hello world...</h3>
-          </div>
+        <TabsContent value="practice" className="w-full">
+          <div className="container">{/* <PracticeModeForm /> */}</div>
         </TabsContent>
       </Tabs>
     </div>

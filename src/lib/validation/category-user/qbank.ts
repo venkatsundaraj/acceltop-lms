@@ -9,9 +9,16 @@ export const statusOfTheQuestionsBank = [
 type StatusOfTheQuestionsBank = (typeof statusOfTheQuestionsBank)[number];
 
 export const filterCategory = z.object({
-  category: z.string().trim().min(1),
-  subCategory: z.string().trim().min(1),
+  category: z.array(z.string()).min(1),
+  subCategory: z.array(z.string()).min(1),
   status: z.enum(statusOfTheQuestionsBank),
 });
 
+export const filterCategoryWithoutStatus = filterCategory.omit({
+  status: true,
+});
+
 export type FilterCategory = z.infer<typeof filterCategory>;
+export type FilterCategoryWithoutStatus = z.infer<
+  typeof filterCategoryWithoutStatus
+>;
