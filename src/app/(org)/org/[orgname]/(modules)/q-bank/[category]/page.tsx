@@ -42,7 +42,7 @@ const page = async ({ params }: pageProps) => {
                 href={`/org/${orgname}/q-bank/${category}/${item.id}`}
               >
                 <li className="bg-accent hover:bg-accent/90 p-2 cursor-pointer text-primary w-full flex items-start justify-left text-subtitle-heading font-normal leading-normal tracking-tight rounded-sm">
-                  {item.name}
+                  {item.name} ({item.totalQuestions})
                 </li>
               </Link>
             ))}

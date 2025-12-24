@@ -75,6 +75,13 @@ const AddQuestions: FC<AddQuestionsProps> = () => {
     }
   };
 
+  useEffect(() => {
+    console.log(errors);
+    // if (errors) {
+    //   toast.error(errors.questions?.message || errors.root?.message);
+    // }
+  }, [errors]);
+
   const submitHandler = async function (data: QuestionFormData) {
     console.log(data);
     // console.log(data.questions.map((item) => item.id));

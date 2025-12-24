@@ -156,6 +156,7 @@ export const orgQBankRouter = createTRPCRouter({
         columns: {
           name: true,
           id: true,
+          totalQuestions: true,
         },
       });
 
@@ -222,41 +223,6 @@ export const orgQBankRouter = createTRPCRouter({
           ])
         );
 
-        // const questionsToInsert: ListOfQuestionsType[] = input.questions.map(
-        //   (item, i) => ({
-        //     id: nanoid(),
-        //     questionText: item.questionText,
-        //     options: item.options.map((q) => ({
-        //       id: q.id || nanoid(),
-        //       text: q.text,
-        //       image: q.url || undefined,
-        //       isCorrect: q.isCorrect,
-        //     })),
-        //     explanation: item.explanation,
-
-        //     createdBy: session.user.id!,
-        //     qbankId: input.qbankdId,
-        //     microTopicId: input.microTopicdId,
-
-        //     questionType: "multiple_choice" as QBankType,
-        //     explanationImages: [],
-        //     explanationVideos: [],
-        //     images: [],
-        //     videos: [],
-        //     references: [],
-        //     difficulty: "medium" as const,
-        //     tags: [],
-        //     timesAttempted: 0,
-        //     timesCorrect: 0,
-        //     avgTimeSpent: 0,
-        //     status: "draft" as const,
-        //     isActive: true,
-        //     createdAt: new Date(),
-        //     updatedAt: new Date(),
-        //     publishedAt: null,
-        //   })
-        // );
-
         const result = new Map<string, ListOfQuestionsType>([
           ...mappingExistingValues,
           ...currentInputValues,
@@ -272,6 +238,10 @@ export const orgQBankRouter = createTRPCRouter({
           .insert(question)
           .values(questionsToInsert)
           .returning();
+        await ctx.db
+          .update(qbank)
+          .set({ totalQuestions: insertedQuestions.length })
+          .where(eq(qbank.id, input.qbankdId));
         return {
           success: true,
           // result: Array.from(result.values()),

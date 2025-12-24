@@ -2,10 +2,10 @@ import { subCategorySchema } from "@/lib/validation/category-schema";
 import { createTRPCRouter, privateProcedure } from "../../trpc";
 import { organisation } from "@/server/db/organisation";
 import { and, eq, inArray } from "drizzle-orm";
-import { category, subCategory } from "@/server/db/index-schema";
+import { category, qbank, subCategory } from "@/server/db/index-schema";
 import { TRPCError } from "@trpc/server";
 import { slugify } from "@/lib/utils";
-import z from "zod";
+import z, { map } from "zod";
 
 export const orgUserQbankRouter = createTRPCRouter({
   getAllCategories: privateProcedure
@@ -23,7 +23,40 @@ export const orgUserQbankRouter = createTRPCRouter({
         .from(category)
         .where(and(eq(category.organisationId, orgId.id)));
 
-      return categories ?? [];
+      const categoryIds = categories.map((item) => item.id);
+
+      const qbankAr = await ctx.db.query.qbank.findMany({
+        where: and(inArray(qbank.categoryId, categoryIds)),
+        with: {
+          question: true,
+        },
+      });
+
+      const mapCat = new Map<
+        string,
+        { id: string; name: string; questions: number }
+      >();
+
+      qbankAr.forEach((item) => {
+        const existingCategory = mapCat.get(item.categoryId);
+        const [{ name: categoryName }] = categories.filter(
+          (catItem) => catItem.id === item.categoryId
+        );
+        if (existingCategory) {
+          return mapCat.set(existingCategory.id, {
+            id: item.categoryId,
+            name: categoryName,
+            questions: existingCategory.questions + item.question.length,
+          });
+        }
+        return mapCat.set(item.categoryId, {
+          id: item.categoryId,
+          name: categoryName,
+          questions: item.question.length,
+        });
+      });
+
+      return [...mapCat.values()];
     }),
   getAllSubCategories: privateProcedure
     .input(

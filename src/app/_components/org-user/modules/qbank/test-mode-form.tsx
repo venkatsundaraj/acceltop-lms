@@ -10,19 +10,10 @@ import {
 } from "@/lib/validation/category-user/qbank";
 import { api } from "@/trpc/react";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { FC, useRef, useState } from "react";
+import { FC, useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 
 interface TestModeFormProps {}
-
-// const categoryList = [
-//   { id: Math.random().toString(32), name: "Orthomentors" },
-//   { id: Math.random().toString(32), name: "Gynacology" },
-// ];
-// const subCategoryList = [
-//   { id: Math.random().toString(32), name: "Orthomentors" },
-//   { id: Math.random().toString(32), name: "Gynacology" },
-// ];
 
 const TestModeForm: FC<TestModeFormProps> = ({}) => {
   const [categoryDropdownOpen, setCategoryDropdownOpen] = useState<boolean>();
@@ -33,6 +24,27 @@ const TestModeForm: FC<TestModeFormProps> = ({}) => {
   const subCategoryRef = useRef<HTMLDivElement>(null);
 
   const { org, sessionUser } = useOrgContext();
+
+  useEffect(() => {
+    const handleClick = function (evnet: MouseEvent) {
+      if (
+        categoryRef.current &&
+        !categoryRef.current.contains(event?.target as Node)
+      ) {
+        setCategoryDropdownOpen(false);
+      }
+      if (
+        subCategoryRef.current &&
+        !subCategoryRef.current.contains(event?.target as Node)
+      ) {
+        setSubCategoryDropdownOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClick);
+    return () => {
+      document.removeEventListener("mousedown", handleClick);
+    };
+  }, []);
 
   const {
     register,
@@ -132,7 +144,9 @@ const TestModeForm: FC<TestModeFormProps> = ({}) => {
                       type="checkbox"
                       className="bg-transparent"
                     />
-                    <span>{item.name}</span>
+                    <span>
+                      {item.name} - {item.questions}
+                    </span>
                   </label>
                 ))}
               </div>
