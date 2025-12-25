@@ -73,9 +73,9 @@ const TestModeForm: FC<TestModeFormProps> = ({}) => {
       {
         // categorySlug: slugify(categoryList?.length ? categoryList[0].name : ""),
         categorySlug: watch("category")
-          ? watch("category").map((item) => slugify(item))
+          ? watch("category").map((item) => item)
           : categoryList?.length
-          ? [slugify(categoryList[0].name)]
+          ? [categoryList[0].id]
           : [],
         organisationId: org.id,
       },
@@ -139,8 +139,8 @@ const TestModeForm: FC<TestModeFormProps> = ({}) => {
                     className="flex items-center justify-start gap-4"
                   >
                     <input
-                      checked={selectedCategories.includes(item.name)}
-                      onChange={() => toggleCategory(item.name)}
+                      checked={selectedCategories.includes(item.id)}
+                      onChange={() => toggleCategory(item.id)}
                       type="checkbox"
                       className="bg-transparent"
                     />
@@ -182,8 +182,8 @@ const TestModeForm: FC<TestModeFormProps> = ({}) => {
                     className="flex items-center justify-start gap-4"
                   >
                     <input
-                      checked={selectedSubCategories.includes(item.name)}
-                      onChange={() => toggleSubCategory(item.name)}
+                      checked={selectedSubCategories.includes(item.id)}
+                      onChange={() => toggleSubCategory(item.id)}
                       type="checkbox"
                       className="bg-transparent"
                     />

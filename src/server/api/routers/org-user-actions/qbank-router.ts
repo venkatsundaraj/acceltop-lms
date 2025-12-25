@@ -75,7 +75,7 @@ export const orgUserQbankRouter = createTRPCRouter({
       const categories = await ctx.db.query.category.findMany({
         where: and(
           eq(category.organisationId, input.organisationId),
-          inArray(category.slug, input.categorySlug)
+          inArray(category.id, input.categorySlug)
         ),
       });
 
