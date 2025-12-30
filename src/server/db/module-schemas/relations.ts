@@ -1,5 +1,12 @@
 import { relations } from "drizzle-orm";
-import { category, microTopic, qbank, question, subCategory } from "./category";
+import {
+  category,
+  microTopic,
+  qbank,
+  qbankTestAttempt,
+  question,
+  subCategory,
+} from "./category";
 import { organisation } from "../organisation";
 import { user } from "../schema";
 
@@ -26,7 +33,7 @@ export const microTopicRelations = relations(microTopic, ({ one, many }) => ({
     fields: [microTopic.subCategoryId],
     references: [subCategory.id],
   }),
-  question: many(question),
+  // question: many(question),
 }));
 
 export const qbankRelations = relations(qbank, ({ one, many }) => ({
@@ -64,3 +71,17 @@ export const questionRelations = relations(question, ({ one, many }) => ({
   //   references: [microTopic.id],
   // }),
 }));
+
+export const qbankTestAttemptRelations = relations(
+  qbankTestAttempt,
+  ({ one, many }) => ({
+    organisation: one(organisation, {
+      fields: [qbankTestAttempt.organisationId],
+      references: [organisation.id],
+    }),
+    user: one(user, {
+      fields: [qbankTestAttempt.userId],
+      references: [user.id],
+    }),
+  })
+);

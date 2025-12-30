@@ -34,3 +34,14 @@ export const questionTypeEnum = pgEnum("question_type", [
   "clinical_based",
   "image_based",
 ]);
+
+export const questiosStatusEnum = pgEnum("question_attempted_status", [
+  "completed",
+  "incorrect",
+  "attempted",
+]);
+
+export const attemptedStatusEnum = pgEnum("attempted_status", [
+  "in_progress",
+  "completed",
+]);

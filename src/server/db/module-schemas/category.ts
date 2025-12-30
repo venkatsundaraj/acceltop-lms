@@ -9,6 +9,8 @@ import {
 import { createTable, user } from "../schema";
 import { organisation } from "../organisation";
 import {
+  attemptedStatusEnum,
+  questiosStatusEnum,
   contentStatusEnum,
   difficultyLevelEnum,
   questionTypeEnum,
@@ -196,6 +198,29 @@ export const question = createTable(
     uniqueQuestions: unique().on(table.qbankId, table.questionText),
   })
 );
+
+export const qbankTestAttempt = createTable("qbankTestAttempts", {
+  id: text("id").primaryKey(),
+  userId: text("user_id")
+    .notNull()
+    .references(() => user.id),
+  organisationId: text("organisation_id")
+    .notNull()
+    .references(() => organisation.id),
+  qbankIds: json("qbank_ids").$type<string[]>(),
+  filterStatus: questiosStatusEnum("filter_status").default("attempted"),
+  totalQuestions: integer("total_questions"),
+  questionIds: json("question_ids").$type<string[]>(),
+  status: attemptedStatusEnum("attempted_status").default("in_progress"),
+  currentQuestionIndex: integer("current_question_index"),
+
+  // createdAt: timestamp("created_at")
+  //   .$defaultFn(() => new Date())
+  //   .notNull(),
+  // updatedAt: timestamp("updated_at")
+  //   .$defaultFn(() => new Date())
+  //   .notNull(),
+});
 
 export type SubCategoryType = typeof subCategory.$inferSelect;
 export type ListOfQuestionsType = typeof question.$inferSelect;

@@ -2,10 +2,19 @@ import { subCategorySchema } from "@/lib/validation/category-schema";
 import { createTRPCRouter, privateProcedure } from "../../trpc";
 import { organisation } from "@/server/db/organisation";
 import { and, eq, inArray } from "drizzle-orm";
-import { category, qbank, subCategory } from "@/server/db/index-schema";
+import {
+  category,
+  qbank,
+  qbankTestAttempt,
+  subCategory,
+} from "@/server/db/index-schema";
 import { TRPCError } from "@trpc/server";
+import * as schema from "@/server/db/index-schema";
 import { slugify } from "@/lib/utils";
 import z, { map } from "zod";
+import { nanoid } from "nanoid";
+import { getCurrentUser } from "@/lib/session";
+import { statusOfTheQuestionsBank } from "@/lib/validation/category-user/qbank";
 
 export const orgUserQbankRouter = createTRPCRouter({
   getAllCategories: privateProcedure
@@ -86,6 +95,93 @@ export const orgUserQbankRouter = createTRPCRouter({
       });
 
       return subCategoryItems ?? [];
+    }),
+  getAllQuestionBankFromCategoryAndSubcategory: privateProcedure
+    .input(
+      z.object({
+        categoryIds: z.array(z.string()),
+        subCategoryIds: z.array(z.string()),
+        organisationId: z.string(),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      if (ctx.userRole !== "org_user") {
+        throw new TRPCError({ code: "UNAUTHORIZED" });
+      }
+
+      const listOfQbanks = await ctx.db.query.qbank.findMany({
+        where: and(
+          eq(qbank.organisationId, input.organisationId),
+          inArray(qbank.categoryId, input.categoryIds),
+          inArray(qbank.subCategoryId, input.subCategoryIds)
+        ),
+      });
+
+      return listOfQbanks ?? [];
+    }),
+  createTestAttempt: privateProcedure
+    .input(
+      z.object({
+        numberOfQuestions: z.number().max(200),
+        categoryIds: z.array(z.string().min(1)),
+        subCategoryIds: z.array(z.string().min(1)),
+        status: z.enum(statusOfTheQuestionsBank),
+        organisationId: z.string(),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      try {
+        const session = await getCurrentUser();
+        if (!session || !session.user || !session.user.id) {
+          throw new TRPCError({ code: "UNAUTHORIZED" });
+        }
+        if (ctx.userRole !== "org_user") {
+          throw new TRPCError({ code: "UNAUTHORIZED" });
+        }
+
+        const qBankList = await ctx.db.query.qbank.findMany({
+          where: and(
+            eq(qbank.organisationId, input.organisationId),
+            inArray(qbank.categoryId, input.categoryIds),
+            inArray(qbank.subCategoryId, input.subCategoryIds)
+          ),
+          with: {
+            question: true,
+          },
+        });
+        const listOfQuestions = qBankList
+          .map((item) => item.question)
+          .flat()
+          .sort(() => Math.random() - 0.5);
+
+        const selectedQuestions = listOfQuestions.slice(
+          0,
+          Math.min(input.numberOfQuestions, 200)
+        );
+
+        const nanoidValue = nanoid();
+
+        const [result] = await ctx.db
+          .insert(qbankTestAttempt)
+          .values({
+            id: nanoidValue,
+            organisationId: input.organisationId,
+            userId: session.user.id,
+            filterStatus: input.status,
+            qbankIds: qBankList.map((item) => item.id),
+            questionIds: selectedQuestions.map((item) => item.id),
+            status: "in_progress",
+            totalQuestions: selectedQuestions.length,
+            currentQuestionIndex: 0,
+          })
+          .returning();
+
+        console.log(result);
+
+        return result;
+      } catch (err) {
+        console.log(err);
+      }
     }),
 });
 
