@@ -161,7 +161,7 @@ export const orgUserQbankRouter = createTRPCRouter({
 
         const nanoidValue = nanoid();
 
-        const [result] = await ctx.db
+        const [testAttempt] = await ctx.db
           .insert(qbankTestAttempt)
           .values({
             id: nanoidValue,
@@ -176,9 +176,9 @@ export const orgUserQbankRouter = createTRPCRouter({
           })
           .returning();
 
-        console.log(result);
+        console.log(testAttempt);
 
-        return result;
+        return { testAttempt, listOfQuestions };
       } catch (err) {
         console.log(err);
       }
