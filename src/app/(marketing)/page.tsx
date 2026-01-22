@@ -17,7 +17,7 @@ const secondRow = reviewsContent.slice(reviewsContent.length / 2);
 
 export default async function Home() {
   const hello = await api.post.hello({ text: "from tRPC" });
-  console.log(hello);
+  // console.log(hello);
 
   return (
     <HydrateClient>
