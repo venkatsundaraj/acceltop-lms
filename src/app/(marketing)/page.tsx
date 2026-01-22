@@ -10,6 +10,8 @@ import { reviewsContent } from "@/config/marketing";
 import { Marquee } from "@/app/_components/ui/marquee";
 import TestimonialCard from "@/app/_components/miscellaneous/testimonial-card";
 
+export const dynamic = "force-dynamic";
+
 const firstRow = reviewsContent.slice(0, reviewsContent.length / 2);
 const secondRow = reviewsContent.slice(reviewsContent.length / 2);
 
@@ -33,7 +35,7 @@ export default async function Home() {
               <Link
                 href={"/org/login"}
                 className={cn(
-                  buttonVariants({ variant: "default", size: "xl" })
+                  buttonVariants({ variant: "default", size: "xl" }),
                 )}
               >
                 Get Started
@@ -41,7 +43,7 @@ export default async function Home() {
               <Link
                 href={"/pricing"}
                 className={cn(
-                  buttonVariants({ variant: "outline", size: "xl" })
+                  buttonVariants({ variant: "outline", size: "xl" }),
                 )}
               >
                 Book a Demo
@@ -75,7 +77,7 @@ export default async function Home() {
                         href={"/pricing"}
                         className={cn(
                           buttonVariants({ variant: "outline" }),
-                          "text-secondary border-secondary hover:text-secondary hover:border-secondary"
+                          "text-secondary border-secondary hover:text-secondary hover:border-secondary",
                         )}
                       >
                         Learn More

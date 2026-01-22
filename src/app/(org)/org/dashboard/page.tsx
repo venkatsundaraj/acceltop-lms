@@ -6,6 +6,8 @@ import { getCurrentUser } from "@/lib/session";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 
+export const dynamic = "force-dynamic";
+
 interface pageProps {}
 
 const page = async ({}) => {

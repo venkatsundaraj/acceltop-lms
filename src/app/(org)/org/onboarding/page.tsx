@@ -9,6 +9,8 @@ import { headers } from "next/headers";
 import { notFound, redirect } from "next/navigation";
 import { FC } from "react";
 
+export const dynamic = "force-dynamic";
+
 interface pageProps {}
 
 const page = async ({}: pageProps) => {

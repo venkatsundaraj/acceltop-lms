@@ -6,6 +6,8 @@ import { FC } from "react";
 
 interface pageProps {}
 
+export const dynamic = "force-dynamic";
+
 const page: FC<pageProps> = ({}) => {
   return (
     <section className="flex flex-col items-center justify-center  py-24 min-h-screen relative">
@@ -48,7 +50,7 @@ const page: FC<pageProps> = ({}) => {
               href={"/login"}
               className={cn(
                 buttonVariants({ variant: "default", size: "xl" }),
-                "w-full self-end"
+                "w-full self-end",
               )}
             >
               Enroll Now
@@ -96,7 +98,7 @@ const page: FC<pageProps> = ({}) => {
               href={"/login"}
               className={cn(
                 buttonVariants({ variant: "default", size: "xl" }),
-                "w-full self-end"
+                "w-full self-end",
               )}
             >
               Enroll Now
@@ -134,7 +136,7 @@ const page: FC<pageProps> = ({}) => {
               href={"/login"}
               className={cn(
                 buttonVariants({ variant: "default", size: "xl" }),
-                "w-full self-end"
+                "w-full self-end",
               )}
             >
               Enroll Now

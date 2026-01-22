@@ -7,6 +7,8 @@ import { FC } from "react";
 import { handleTRPCCall } from "@/lib/handle-trpc-error";
 import { api } from "@/trpc/server";
 
+export const dynamic = "force-dynamic";
+
 interface pageProps {}
 
 const page = async ({}: pageProps) => {
